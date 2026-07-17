@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>The Grand Trial</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/minigames.css">
+</head>
+<body>
+  <div id="game-root">
+    <header id="hud">
+      <div class="hud-left">
+        <span id="hud-name">Apprentice</span>
+        <span id="hud-level" class="hud-badge">Lv 1</span>
+      </div>
+      <div class="hud-xp">
+        <div id="xp-bar">
+          <div id="xp-fill"></div>
+          <span id="xp-text">0 / 100 XP</span>
+        </div>
+      </div>
+      <div class="hud-right">
+        <span id="hud-embers" title="Embers — one per day you complete the daily drill">&#128293; 0</span>
+        <button id="btn-daily-drill" class="btn btn-gold" type="button">Daily Drill</button>
+      </div>
+    </header>
+    <div id="stage">
+      <canvas id="world-canvas" width="960" height="540"></canvas>
+    </div>
+    <p id="stage-hint">Move: WASD / arrows &middot; Interact: Enter or click a landmark</p>
+  </div>
+
+  <div id="overlay-region" class="overlay hidden"></div>
+  <div id="overlay-minigame" class="overlay hidden"></div>
+  <div id="overlay-modal" class="overlay hidden"></div>
+  <div id="celebrate-layer"></div>
+  <div id="toasts"></div>
+
+  <script src="js/api.js"></script>
+  <script src="js/state.js"></script>
+  <script src="js/world.js"></script>
+  <script src="js/hud.js"></script>
+  <script src="js/region.js"></script>
+  <script src="js/minigames/rune_trials.js"></script>
+  <script src="js/minigames/quiz_boss.js"></script>
+  <script src="js/main.js"></script>
+</body>
+</html>

@@ -1,0 +1,37 @@
+{
+  "quests": [
+    {
+      "id": "pf-l1-q1",
+      "region": "rune-plains",
+      "lesson": "L1 · Runes of Data",
+      "type": "code",
+      "title": "The Word-Hoard",
+      "xp": 100,
+      "path": "01-python-fluency/lesson-01-runes-of-data/quest-01",
+      "summary": "Forge word-tallying runes from a blank file: frequencies, top-N ranking, ordered dedupe, grouping.",
+      "requires": []
+    },
+    {
+      "id": "pf-l1-q2",
+      "region": "rune-plains",
+      "lesson": "L1 · Runes of Data",
+      "type": "code",
+      "title": "The Shaping of Collections",
+      "xp": 100,
+      "path": "01-python-fluency/lesson-01-runes-of-data/quest-02",
+      "summary": "Reshape a spellbook with comprehensions: filter, group by level, invert an index, pick champions.",
+      "requires": ["pf-l1-q1"]
+    },
+    {
+      "id": "pf-l1-boss",
+      "region": "rune-plains",
+      "lesson": "L1 · Runes of Data",
+      "type": "boss",
+      "title": "The Keeper of Runes",
+      "xp": 50,
+      "bank": "pf-l1",
+      "summary": "Face the Keeper: twelve questions on lists, dicts, sets, tuples and the traps between them.",
+      "requires": ["pf-l1-q1", "pf-l1-q2"]
+    }
+  ]
+}

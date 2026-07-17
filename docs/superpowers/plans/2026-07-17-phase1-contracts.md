@@ -116,9 +116,11 @@ window.Minigames.quizBoss.start(overlayEl, bank, opts, onComplete);
 Rune Trials (drill): `questionCount` (default 10) random questions (curse
 questions injected first, flagged "CURSE ATTACK"), per-question 45s timer, combo
 meter for streaks (cosmetic), immediate feedback with `explain` after each
-answer. Quiz Boss: 12 questions, boss HP bar (correct answers damage it), player
-has 3 hearts (wrong answer = lose one; 0 hearts = defeat), victory = boss HP
-depleted with hearts remaining; on defeat `completed:false`. Both: fantasy
+answer. Quiz Boss: 12 questions, boss HP = questions − (hearts − 1) — e.g. 10 —
+so up to 2 wrong answers still wins (~83% mastery bar; no flawless-run
+requirement, no stalemate state). Correct answers deal 1 damage; HP 0 =
+immediate victory. Player has 3 hearts (wrong answer = lose one; 0 hearts =
+defeat, `completed:false`). Both: fantasy
 styling per `minigames.css`, code rendered monospace preserving whitespace.
 
 ENGINE owns all state mutations from results (XP, embers, curses, quest status,

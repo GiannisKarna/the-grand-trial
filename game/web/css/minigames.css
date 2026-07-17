@@ -1,0 +1,739 @@
+/*
+ * The Grand Trial — minigame styling (Rune Trials + Quiz Boss)
+ * Dark fantasy: obsidian backdrop, parchment cards, antique gold accents.
+ * System fonts only (Georgia/serif for flavor, Consolas/monospace for code).
+ * All animation is CSS-based; no external assets.
+ */
+
+/* ---------- root overlay ---------- */
+
+.mg-root {
+  position: absolute;
+  inset: 0;
+  overflow-y: auto;
+  display: flex;
+  z-index: 40;
+  background:
+    radial-gradient(ellipse at 50% 18%, #1b1530 0%, #0b0817 68%, #060410 100%);
+  font-family: Georgia, "Times New Roman", serif;
+  color: #e8dcc0;
+}
+
+.mg-root * {
+  box-sizing: border-box;
+}
+
+.mg-root button {
+  font-family: inherit;
+}
+
+.mg-mono {
+  font-family: Consolas, "Courier New", monospace;
+}
+
+/* ---------- panels (splash / intro / end screens) ---------- */
+
+.mg-panel {
+  width: min(680px, 92%);
+  margin: auto;
+  padding: 36px 32px;
+  text-align: center;
+  background: linear-gradient(170deg, #1a1430, #120e22);
+  border: 2px solid #6d5b2e;
+  border-radius: 12px;
+  box-shadow: 0 0 46px rgba(0, 0, 0, 0.75), inset 0 0 70px rgba(16, 8, 36, 0.6);
+  animation: mg-rise 0.35s ease-out;
+}
+
+.mg-eyebrow {
+  font-size: 12px;
+  letter-spacing: 0.38em;
+  text-transform: uppercase;
+  color: #a893c9;
+  margin-bottom: 8px;
+}
+
+.mg-title {
+  margin: 4px 0 6px;
+  font-size: clamp(30px, 6vw, 46px);
+  font-weight: normal;
+  letter-spacing: 0.08em;
+  color: #f5d67a;
+  text-shadow: 0 0 18px rgba(217, 180, 91, 0.55);
+  animation: mg-title-in 0.8s ease-out;
+}
+
+.mg-subtitle {
+  font-size: 13px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: #a893c9;
+  margin-bottom: 10px;
+}
+
+.mg-splash-glyph {
+  font-size: 40px;
+  color: #d9b45b;
+  text-shadow: 0 0 22px rgba(217, 180, 91, 0.8);
+  animation: mg-glyph-pulse 2.6s ease-in-out infinite;
+}
+
+.mg-flavor {
+  color: #cbbd9c;
+  line-height: 1.65;
+  margin: 14px auto;
+  max-width: 46em;
+}
+
+.mg-menace {
+  font-style: italic;
+  color: #d8c6e8;
+  line-height: 1.65;
+  margin: 14px auto;
+  max-width: 44em;
+}
+
+.mg-curse-note {
+  color: #ff8f8f;
+  text-shadow: 0 0 8px rgba(192, 52, 52, 0.5);
+  margin: 10px 0;
+}
+
+.mg-actions {
+  margin-top: 20px;
+}
+
+/* ---------- primary button ---------- */
+
+.mg-primary {
+  font-size: 17px;
+  letter-spacing: 0.06em;
+  padding: 12px 28px;
+  border-radius: 8px;
+  border: 2px solid #d9b45b;
+  background: linear-gradient(#3a2f14, #241c0c);
+  color: #f5d67a;
+  cursor: pointer;
+  transition: box-shadow 0.15s, transform 0.15s, background 0.15s;
+}
+
+.mg-primary:hover {
+  background: linear-gradient(#4a3d1c, #2e2410);
+  box-shadow: 0 0 16px rgba(217, 180, 91, 0.45);
+  transform: translateY(-1px);
+}
+
+.mg-primary:focus-visible {
+  outline: 2px solid #f5d67a;
+  outline-offset: 2px;
+}
+
+/* ---------- question stage ---------- */
+
+.mg-stage {
+  position: relative;
+  width: min(760px, 94%);
+  margin: auto;
+  padding: 22px 0 34px;
+}
+
+.mg-head,
+.mg-subhead {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 0 2px 8px;
+}
+
+.mg-progress {
+  font-size: 13px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: #b7a77a;
+}
+
+/* combo meter (cosmetic) */
+
+.mg-combo {
+  min-height: 22px;
+  font-weight: bold;
+  letter-spacing: 0.12em;
+  color: #f5d67a;
+  text-shadow: 0 0 8px rgba(245, 214, 122, 0.55);
+}
+
+.mg-combo-pop {
+  animation: mg-combo-pop 0.35s ease-out;
+}
+
+.mg-combo-broken {
+  color: #e05555;
+  text-shadow: 0 0 8px rgba(224, 85, 85, 0.6);
+  animation: mg-combo-break 0.5s ease-out;
+}
+
+/* ---------- 45s timer bar (Rune Trials) ---------- */
+
+.mg-timer {
+  height: 10px;
+  margin-bottom: 12px;
+  background: #241d38;
+  border: 1px solid #4a3c68;
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.mg-timer-fill {
+  height: 100%;
+  width: 100%;
+  background: #e9c766;
+  box-shadow: 0 0 8px rgba(233, 199, 102, 0.6);
+  /* animation set inline by JS: mg-timer-drain <N>s linear forwards */
+}
+
+@keyframes mg-timer-drain {
+  0%   { width: 100%; background: #e9c766; }
+  55%  { background: #e9c766; }
+  75%  { background: #d98a3d; }
+  90%  { background: #c03434; }
+  100% { width: 0%;   background: #c03434; }
+}
+
+/* ---------- curse attack banner ---------- */
+
+.mg-curse-banner {
+  margin: 4px 0 12px;
+  padding: 9px 6px;
+  text-align: center;
+  font-weight: bold;
+  font-size: 17px;
+  letter-spacing: 0.32em;
+  color: #ffd9d9;
+  text-shadow: 0 0 10px #ff5050, 0 0 26px rgba(192, 52, 52, 0.8);
+  background: linear-gradient(90deg, transparent, rgba(161, 38, 38, 0.85), transparent);
+  animation: mg-curse-slam 0.55s ease-out;
+}
+
+/* ---------- parchment question card ---------- */
+
+.mg-card {
+  background: linear-gradient(160deg, #f3e6c8, #e7d2a4);
+  color: #2b2118;
+  border: 2px solid #8a7448;
+  border-radius: 10px;
+  padding: 18px 20px 20px;
+  box-shadow: 0 8px 26px rgba(0, 0, 0, 0.55), inset 0 0 40px rgba(138, 116, 72, 0.12);
+}
+
+.mg-badges {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-bottom: 10px;
+}
+
+.mg-badge {
+  display: inline-block;
+  font-size: 11px;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  padding: 3px 11px;
+  border: 1px solid #8a7448;
+  border-radius: 999px;
+  color: #6b5638;
+  background: rgba(255, 250, 235, 0.45);
+}
+
+.mg-badge-curse {
+  border-color: #a12626;
+  color: #8a1d1d;
+  background: rgba(192, 52, 52, 0.1);
+}
+
+.mg-prompt {
+  margin: 4px 0 12px;
+  font-size: 18px;
+  line-height: 1.55;
+}
+
+/* code: monospace, whitespace preserved exactly, horizontal scroll if wide */
+
+.mg-code {
+  margin: 0 0 14px;
+  padding: 13px 15px;
+  background: #12101e;
+  color: #dfe6f2;
+  border: 1px solid #3b3358;
+  border-left: 3px solid #d9b45b;
+  border-radius: 6px;
+  font-family: Consolas, "Courier New", monospace;
+  font-size: 14.5px;
+  line-height: 1.55;
+  white-space: pre;
+  tab-size: 4;
+  overflow-x: auto;
+  text-align: left;
+}
+
+/* ---------- choice cards ---------- */
+
+.mg-choices {
+  display: grid;
+  gap: 10px;
+  margin-top: 6px;
+}
+
+.mg-choice {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+  width: 100%;
+  text-align: left;
+  padding: 12px 14px;
+  background: linear-gradient(#faf0d8, #edd9ae);
+  color: #2b2118;
+  border: 2px solid #8a7448;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 16px;
+  line-height: 1.45;
+  transition: transform 0.12s, box-shadow 0.12s, border-color 0.12s;
+}
+
+.mg-choice:hover:not(:disabled) {
+  transform: translateY(-2px);
+  border-color: #d9b45b;
+  box-shadow: 0 5px 16px rgba(217, 180, 91, 0.3);
+}
+
+.mg-choice:focus-visible {
+  outline: 2px solid #6b5638;
+  outline-offset: 2px;
+}
+
+.mg-choice:disabled {
+  cursor: default;
+}
+
+.mg-choice-key {
+  flex: 0 0 auto;
+  font-family: Consolas, "Courier New", monospace;
+  font-size: 13px;
+  font-weight: bold;
+  color: #6b5638;
+  border: 1px solid #8a7448;
+  border-radius: 5px;
+  padding: 1px 7px;
+  background: rgba(255, 250, 235, 0.6);
+}
+
+.mg-choice-text {
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.mg-choices-mono .mg-choice-text {
+  font-family: Consolas, "Courier New", monospace;
+  font-size: 14.5px;
+}
+
+.mg-choice-correct {
+  border-color: #3f9e57;
+  background: linear-gradient(#e3f0d8, #cfe5bd);
+  box-shadow: 0 0 14px rgba(63, 158, 87, 0.55);
+}
+
+.mg-choice-wrong {
+  border-color: #c03434;
+  background: linear-gradient(#f0d8d8, #e5bdbd);
+  animation: mg-wrong-jitter 0.3s ease-out;
+}
+
+/* ---------- feedback (the teaching moment) ---------- */
+
+.mg-feedback {
+  margin-top: 16px;
+  padding: 14px 15px;
+  border-radius: 8px;
+  border: 1px solid;
+  animation: mg-rise 0.3s ease-out;
+}
+
+.mg-fb-good {
+  background: rgba(63, 158, 87, 0.14);
+  border-color: #3f9e57;
+}
+
+.mg-fb-bad {
+  background: rgba(192, 52, 52, 0.12);
+  border-color: #c03434;
+}
+
+.mg-fb-verdict {
+  font-size: 18px;
+  font-weight: bold;
+  letter-spacing: 0.03em;
+  margin-bottom: 8px;
+}
+
+.mg-fb-good .mg-fb-verdict { color: #2e7742; }
+.mg-fb-bad  .mg-fb-verdict { color: #8a1d1d; }
+
+.mg-fb-answer {
+  margin: 8px 0;
+  padding: 9px 12px;
+  background: #12101e;
+  color: #dfe6f2;
+  border-radius: 6px;
+  white-space: pre-wrap;
+  word-break: break-word;
+  text-align: left;
+  line-height: 1.5;
+}
+
+.mg-fb-answer-label {
+  color: #f5d67a;
+  font-family: Georgia, "Times New Roman", serif;
+}
+
+.mg-fb-explain {
+  margin: 8px 0;
+  padding: 11px 13px;
+  background: linear-gradient(#f7ecd2, #eeddb4);
+  color: #2b2118;
+  border-left: 3px solid #8a7448;
+  border-radius: 6px;
+  line-height: 1.55;
+  text-align: left;
+}
+
+.mg-fb-actions {
+  margin-top: 12px;
+  text-align: right;
+}
+
+/* rune flash on a correct answer */
+
+.mg-flash {
+  position: absolute;
+  inset: 0;
+  z-index: 5;
+  pointer-events: none;
+  background: radial-gradient(circle at 50% 42%, rgba(245, 214, 122, 0.55), transparent 62%);
+  animation: mg-flash 0.7s ease-out forwards;
+}
+
+/* ---------- end screen (Rune Trials) ---------- */
+
+.mg-stats {
+  display: flex;
+  gap: 34px;
+  justify-content: center;
+  margin: 18px 0 6px;
+}
+
+.mg-stat-big {
+  font-size: 40px;
+  color: #f5d67a;
+  text-shadow: 0 0 14px rgba(217, 180, 91, 0.5);
+}
+
+.mg-stat-label {
+  font-size: 11px;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  color: #a893c9;
+  margin-top: 2px;
+}
+
+.mg-recap {
+  margin: 14px 0 4px;
+  max-height: 230px;
+  overflow-y: auto;
+  text-align: left;
+  border: 1px solid rgba(217, 180, 91, 0.25);
+  border-radius: 8px;
+  background: rgba(0, 0, 0, 0.28);
+}
+
+.mg-recap-row {
+  display: flex;
+  gap: 10px;
+  align-items: baseline;
+  padding: 8px 12px;
+  border-bottom: 1px solid rgba(217, 180, 91, 0.14);
+}
+
+.mg-recap-row:last-child {
+  border-bottom: none;
+}
+
+.mg-recap-mark {
+  flex: 0 0 18px;
+  font-weight: bold;
+}
+
+.mg-recap-good .mg-recap-mark { color: #7fd18f; }
+.mg-recap-bad  .mg-recap-mark { color: #e37f7f; }
+
+.mg-recap-body {
+  flex: 1;
+  min-width: 0;
+}
+
+.mg-recap-prompt {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  color: #e8dcc0;
+}
+
+.mg-recap-answer {
+  margin-top: 3px;
+  font-size: 12.5px;
+  color: #c9b98d;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+/* ---------- Quiz Boss: HUD, HP bar, heart-gems ---------- */
+
+.mg-bosshud {
+  margin-bottom: 10px;
+  padding: 13px 15px;
+  background: linear-gradient(#221231, #160b20);
+  border: 2px solid #6d2a2a;
+  border-radius: 10px;
+  box-shadow: 0 0 24px rgba(109, 42, 42, 0.35);
+}
+
+.mg-bosshud-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 7px;
+}
+
+.mg-boss-name {
+  font-size: 20px;
+  letter-spacing: 0.06em;
+  color: #ff9b8b;
+  text-shadow: 0 0 12px rgba(192, 52, 52, 0.55);
+}
+
+.mg-hp-text {
+  font-family: Consolas, "Courier New", monospace;
+  font-size: 13px;
+  color: #e8b9b9;
+}
+
+.mg-hpbar {
+  height: 18px;
+  background: #241d38;
+  border: 1px solid #6d2a2a;
+  border-radius: 9px;
+  overflow: hidden;
+}
+
+.mg-hpbar-fill {
+  height: 100%;
+  background: linear-gradient(#e05555, #8f1d1d);
+  box-shadow: inset 0 2px 2px rgba(255, 255, 255, 0.25);
+  transition: width 0.5s ease;
+}
+
+.mg-hit .mg-hpbar-fill {
+  animation: mg-hit-flash 0.55s ease-out;
+}
+
+.mg-hit .mg-boss-name {
+  animation: mg-boss-jolt 0.45s ease-out;
+}
+
+.mg-boss-title {
+  color: #ff7b6b;
+  text-shadow: 0 0 22px rgba(192, 52, 52, 0.65);
+}
+
+/* heart-gems: CSS-drawn faceted diamonds */
+
+.mg-hearts {
+  display: flex;
+  gap: 15px;
+  padding-right: 6px;
+}
+
+.mg-gem {
+  width: 20px;
+  height: 20px;
+  transform: rotate(45deg);
+  background: linear-gradient(135deg, #ff8f8f 0%, #c02a3c 55%, #7c1020 100%);
+  border: 1px solid #ffb0b0;
+  border-radius: 3px;
+  box-shadow: 0 0 11px rgba(255, 80, 90, 0.65),
+              inset 2px 2px 3px rgba(255, 255, 255, 0.55);
+}
+
+.mg-gem-lost {
+  animation: mg-gem-shatter 0.6s ease-in forwards;
+}
+
+.mg-gem-dead,
+.mg-gem-lost {
+  background: #2a2334;
+  border-color: #4a3f5e;
+  box-shadow: none;
+}
+
+/* screen shake on a wrong answer */
+
+.mg-shake {
+  animation: mg-shake 0.5s ease-in-out;
+}
+
+/* ---------- Quiz Boss: outcome screens ---------- */
+
+.mg-victory {
+  position: relative;
+  overflow: hidden;
+  border-color: #d9b45b;
+}
+
+.mg-victory-inner {
+  position: relative;
+  z-index: 1;
+}
+
+.mg-rays {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 1400px;
+  height: 1400px;
+  margin: -700px 0 0 -700px;
+  pointer-events: none;
+  background: repeating-conic-gradient(
+    rgba(245, 214, 122, 0.12) 0deg 8deg,
+    transparent 8deg 26deg
+  );
+  animation: mg-spin 18s linear infinite;
+}
+
+.mg-victory-title {
+  animation: mg-victory-in 0.9s cubic-bezier(0.2, 1.6, 0.4, 1);
+}
+
+.mg-defeat {
+  border-color: #6d2a2a;
+  box-shadow: 0 0 46px rgba(80, 10, 10, 0.55), inset 0 0 70px rgba(40, 6, 10, 0.6);
+}
+
+.mg-defeat-title {
+  color: #e05555;
+  text-shadow: 0 0 18px rgba(192, 52, 52, 0.6);
+}
+
+/* ---------- keyframes ---------- */
+
+@keyframes mg-rise {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes mg-title-in {
+  0%   { opacity: 0; transform: scale(1.25); letter-spacing: 0.3em; }
+  100% { opacity: 1; transform: scale(1); }
+}
+
+@keyframes mg-glyph-pulse {
+  0%, 100% { opacity: 0.75; text-shadow: 0 0 12px rgba(217, 180, 91, 0.5); }
+  50%      { opacity: 1;    text-shadow: 0 0 28px rgba(245, 214, 122, 0.95); }
+}
+
+@keyframes mg-curse-slam {
+  0%   { opacity: 0; transform: scale(2.1); }
+  60%  { opacity: 1; transform: scale(0.95); }
+  100% { transform: scale(1); }
+}
+
+@keyframes mg-combo-pop {
+  0%   { transform: scale(1); }
+  40%  { transform: scale(1.5); }
+  100% { transform: scale(1); }
+}
+
+@keyframes mg-combo-break {
+  0%   { transform: scale(1.4) rotate(0deg); }
+  30%  { transform: scale(1) rotate(-4deg); }
+  60%  { transform: rotate(3deg); }
+  100% { transform: rotate(0deg); }
+}
+
+@keyframes mg-flash {
+  0%   { opacity: 0; }
+  25%  { opacity: 1; }
+  100% { opacity: 0; }
+}
+
+@keyframes mg-wrong-jitter {
+  0%, 100% { transform: translateX(0); }
+  25%      { transform: translateX(-5px); }
+  50%      { transform: translateX(5px); }
+  75%      { transform: translateX(-3px); }
+}
+
+@keyframes mg-shake {
+  10%, 90% { transform: translate(-2px, 0); }
+  20%, 80% { transform: translate(4px, 1px); }
+  30%, 70% { transform: translate(-6px, -2px); }
+  40%, 60% { transform: translate(6px, 2px); }
+  50%      { transform: translate(-4px, 1px); }
+}
+
+@keyframes mg-hit-flash {
+  0%   { filter: brightness(3); }
+  100% { filter: brightness(1); }
+}
+
+@keyframes mg-boss-jolt {
+  0%   { transform: translateX(0); }
+  30%  { transform: translateX(-6px) rotate(-1.5deg); }
+  60%  { transform: translateX(4px) rotate(1deg); }
+  100% { transform: translateX(0); }
+}
+
+@keyframes mg-gem-shatter {
+  0%   { transform: rotate(45deg) scale(1); filter: brightness(3); }
+  40%  { transform: rotate(70deg) scale(1.3); }
+  100% { transform: rotate(45deg) scale(0.9); filter: brightness(1); }
+}
+
+@keyframes mg-spin {
+  to { transform: rotate(360deg); }
+}
+
+@keyframes mg-victory-in {
+  0%   { opacity: 0; transform: scale(0.4); }
+  100% { opacity: 1; transform: scale(1); }
+}
+
+/* ---------- small screens & accessibility ---------- */
+
+@media (max-width: 640px) {
+  .mg-panel { padding: 26px 18px; }
+  .mg-stage { padding-top: 14px; }
+  .mg-card { padding: 14px; }
+  .mg-prompt { font-size: 16px; }
+  .mg-choice { font-size: 15px; padding: 10px 11px; }
+  .mg-stat-big { font-size: 32px; }
+  .mg-stats { gap: 22px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  /* keep the timer drain (it conveys game state); still everything else */
+  .mg-root,
+  .mg-root :not(.mg-timer-fill) {
+    animation: none !important;
+    transition: none !important;
+  }
+}

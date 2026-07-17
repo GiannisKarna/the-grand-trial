@@ -1,0 +1,361 @@
+{
+  "id": "pf-l1",
+  "title": "Runes of Data",
+  "boss_name": "The Keeper of Runes",
+  "questions": [
+    {
+      "id": "pf-l1-001",
+      "type": "predict",
+      "prompt": "What does this print?",
+      "code": "a = [1, 2, 3]\nb = a\nb.append(4)\nprint(a)",
+      "choices": [
+        "[1, 2, 3]",
+        "[1, 2, 3, 4]",
+        "[4, 1, 2, 3]",
+        "TypeError: 'list' object is read-only"
+      ],
+      "answer": 1,
+      "explain": "b = a copies the reference, not the list — both names point at the same object, so mutating through b is visible through a. This is the number-one production bug with lists passed into functions: the caller's data changes silently. When you need an independent list, say so explicitly with a.copy() or list(a)."
+    },
+    {
+      "id": "pf-l1-002",
+      "type": "predict",
+      "prompt": "What does this print?",
+      "code": "def add_item(item, bucket=[]):\n    bucket.append(item)\n    return bucket\n\nprint(add_item(1))\nprint(add_item(2))",
+      "choices": [
+        "[1]\n[2]",
+        "[1]\n[1, 2]",
+        "[1, 2]\n[1, 2]",
+        "[2]\n[1, 2]"
+      ],
+      "answer": 1,
+      "explain": "Default values are evaluated once, at def time — every call that omits bucket shares the same list, so state leaks between calls. In production this surfaces as data from one request bleeding into another. The idiom is bucket=None, then 'if bucket is None: bucket = []' inside the function."
+    },
+    {
+      "id": "pf-l1-003",
+      "type": "predict",
+      "prompt": "What does this print?",
+      "code": "d = {\"b\": 1}\nd[\"a\"] = 2\nd[\"c\"] = 3\nd[\"a\"] = 9\nprint(list(d))",
+      "choices": [
+        "['a', 'b', 'c']",
+        "['b', 'a', 'c']",
+        "['b', 'c', 'a']",
+        "['a', 'c', 'b']"
+      ],
+      "answer": 1,
+      "explain": "Dicts iterate in insertion order (a language guarantee since 3.7), and updating the value of an existing key does not move it — 'a' keeps its original slot. Note insertion order is not sorted order: if you need keys sorted, you must call sorted(d) yourself."
+    },
+    {
+      "id": "pf-l1-004",
+      "type": "predict",
+      "prompt": "What does this print?",
+      "code": "tags = [\"red\", \"blue\", \"red\", \"green\", \"blue\", \"red\"]\nunique = set(tags)\nprint(len(unique))",
+      "choices": [
+        "3",
+        "4",
+        "6",
+        "5"
+      ],
+      "answer": 0,
+      "explain": "A set keeps exactly one of each value: {'red', 'blue', 'green'} has 3 members. But note what you gave up — iteration order over a set is arbitrary (hash-dependent), so never build user-visible output straight from set iteration; dedupe in order with list(dict.fromkeys(tags)) instead."
+    },
+    {
+      "id": "pf-l1-005",
+      "type": "predict",
+      "prompt": "What does this print?",
+      "code": "t = ([1, 2], \"rune\")\nt[0].append(3)\nprint(t)",
+      "choices": [
+        "TypeError: 'tuple' object does not support item assignment",
+        "([1, 2, 3], 'rune')",
+        "([1, 2], 'rune')",
+        "AttributeError: 'tuple' object has no attribute 'append'"
+      ],
+      "answer": 1,
+      "explain": "Tuple immutability is shallow: the tuple's slots can never be reassigned (t[0] = ... would raise), but the objects inside remain whatever they are — and this list is happily mutable. In production this means a tuple is not a deep-freeze; if it contains a list, anyone holding a reference can still change your 'immutable' record."
+    },
+    {
+      "id": "pf-l1-006",
+      "type": "predict",
+      "prompt": "What does this print?",
+      "code": "s = \"interview\"\nprint(s[-4:])\nprint(s[::2])",
+      "choices": [
+        "view\nitriw",
+        "rview\nitriw",
+        "view\nirve",
+        "wiev\nitriw"
+      ],
+      "answer": 0,
+      "explain": "s[-4:] means 'from the 4th character from the end, to the end' — 'view'. s[::2] takes every second character starting at index 0: i-t-r-i-w. Slicing never raises for out-of-range bounds and always returns a new string; interviewers love s[::-1] (reverse) and off-by-one negative indices."
+    },
+    {
+      "id": "pf-l1-007",
+      "type": "predict",
+      "prompt": "What does this print?",
+      "code": "nums = [0, 1, 2, 3, 4, 5]\nprint(nums[4:1:-1])\nprint(nums[::-1])",
+      "choices": [
+        "[4, 3, 2]\n[5, 4, 3, 2, 1, 0]",
+        "[4, 3, 2, 1]\n[5, 4, 3, 2, 1, 0]",
+        "[2, 3, 4]\n[5, 4, 3, 2, 1, 0]",
+        "[]\n[5, 4, 3, 2, 1, 0]"
+      ],
+      "answer": 0,
+      "explain": "With a negative step the slice walks backwards from start toward stop, and the stop index is still excluded: 4, 3, 2 — not 1. [::-1] is the idiomatic full reverse (a new list; the original is untouched, unlike nums.reverse()). Getting the exclusive stop wrong is the classic off-by-one here."
+    },
+    {
+      "id": "pf-l1-008",
+      "type": "predict",
+      "prompt": "What does this print?",
+      "code": "grid = [[0, 0], [0, 0]]\nsnapshot = grid.copy()\nsnapshot[0].append(7)\nsnapshot.append([9, 9])\nprint(grid)",
+      "choices": [
+        "[[0, 0], [0, 0]]",
+        "[[0, 0, 7], [0, 0]]",
+        "[[0, 0, 7], [0, 0], [9, 9]]",
+        "[[0, 0, 7], [0, 0, 7]]"
+      ],
+      "answer": 1,
+      "explain": "copy() is shallow: the new outer list has its own slots (so appending [9, 9] doesn't touch grid), but those slots point at the same inner lists — mutating snapshot[0] mutates grid[0]. When nested data must be independent, you need copy.deepcopy, and you pay for it: it walks and re-allocates the whole structure."
+    },
+    {
+      "id": "pf-l1-009",
+      "type": "predict",
+      "prompt": "What does this print?",
+      "code": "scores = [30, 10, 20]\nresult = scores.sort()\nprint(result)\nprint(scores)",
+      "choices": [
+        "[10, 20, 30]\n[10, 20, 30]",
+        "None\n[10, 20, 30]",
+        "None\n[30, 10, 20]",
+        "[10, 20, 30]\n[30, 10, 20]"
+      ],
+      "answer": 1,
+      "explain": "list.sort() sorts in place and returns None — a deliberate Python convention: mutating methods don't return the object, so you can't mistake them for pure ones. sorted(scores) is the expression form that returns a new list and works on any iterable. 'x = xs.sort()' silently planting None in a variable is a real, common production bug."
+    },
+    {
+      "id": "pf-l1-010",
+      "type": "predict",
+      "prompt": "What does this print?",
+      "code": "words = [\"oak\", \"fir\", \"elm\", \"yew\", \"ash\"]\nprint(sorted(words, key=len))",
+      "choices": [
+        "['ash', 'elm', 'fir', 'oak', 'yew']",
+        "['oak', 'fir', 'elm', 'yew', 'ash']",
+        "['yew', 'ash', 'elm', 'fir', 'oak']",
+        "ValueError: cannot sort equal keys"
+      ],
+      "answer": 1,
+      "explain": "Every word has length 3, and Python's sort is stable: elements whose keys compare equal keep their original relative order, so the list comes back untouched. Stability is why multi-key sorting works as 'sort by secondary key first, then by primary' — a favorite interview follow-up."
+    },
+    {
+      "id": "pf-l1-011",
+      "type": "predict",
+      "prompt": "What does this print?",
+      "code": "pairs = [(x, y) for x in range(3) for y in range(2) if x != y]\nprint(pairs)",
+      "choices": [
+        "[(0, 1), (1, 0), (2, 0), (2, 1)]",
+        "[(0, 0), (0, 1), (1, 0), (1, 1), (2, 0), (2, 1)]",
+        "[(0, 1), (1, 0), (2, 1)]",
+        "[(1, 0), (0, 1), (2, 1), (2, 0)]"
+      ],
+      "answer": 0,
+      "explain": "Two for clauses nest left-to-right like nested loops: x is the outer loop, y the inner, and the if filters each (x, y) pair — (0,0) and (1,1) are dropped. Reading comprehensions as loops, in clause order, is the fastest way to stop guessing on these."
+    },
+    {
+      "id": "pf-l1-012",
+      "type": "predict",
+      "prompt": "What does this print?",
+      "code": "vals = [x if x % 2 else x * 10 for x in range(5)]\nprint(vals)",
+      "choices": [
+        "[0, 1, 20, 3, 40]",
+        "[0, 10, 2, 30, 4]",
+        "[1, 3]",
+        "[0, 1, 2, 3, 4]"
+      ],
+      "answer": 0,
+      "explain": "'A if cond else B' before the for is a per-element transform, not a filter — every x produces a value. x % 2 is 0 (falsy) for even numbers, so evens take the else branch and get multiplied by 10. A trailing 'if' (after the for) would filter instead; confusing the two positions is the classic trap."
+    },
+    {
+      "id": "pf-l1-013",
+      "type": "predict",
+      "prompt": "What happens when this runs?",
+      "code": "counts = {\"sword\": 2}\nprint(counts.get(\"shield\", 0))\nprint(counts.get(\"sword\"))\nprint(counts[\"shield\"])",
+      "choices": [
+        "Prints 0, prints 2, then raises KeyError",
+        "Prints 0, prints None, then raises KeyError",
+        "Prints 0, prints 2, prints None",
+        "Raises KeyError on the first line"
+      ],
+      "answer": 0,
+      "explain": "get() returns the default (or None) for missing keys and never raises; [] raises KeyError. Choose deliberately in production: get() for genuinely-optional keys, [] when a missing key means the data is broken and you WANT the loud failure — get() everywhere can hide corruption behind quiet Nones."
+    },
+    {
+      "id": "pf-l1-014",
+      "type": "predict",
+      "prompt": "What does this print?",
+      "code": "names = [\"Ana\", \"Bo\", \"Cy\"]\nlevels = [3, 5]\nfor i, pair in enumerate(zip(names, levels), start=1):\n    print(i, pair)",
+      "choices": [
+        "1 ('Ana', 3)\n2 ('Bo', 5)",
+        "0 ('Ana', 3)\n1 ('Bo', 5)",
+        "1 ('Ana', 3)\n2 ('Bo', 5)\n3 ('Cy', None)",
+        "ValueError: zip() arguments have different lengths"
+      ],
+      "answer": 0,
+      "explain": "zip stops silently at the shortest input — 'Cy' is dropped without any error, which is a notorious silent-data-loss bug when two parallel lists drift out of sync. Python 3.10+ added zip(..., strict=True) to make length mismatches raise. enumerate(..., start=1) only changes the numbering, not the pairing."
+    },
+    {
+      "id": "pf-l1-015",
+      "type": "bug",
+      "prompt": "This should remove every even number, but drop_evens([1, 2, 2, 3]) returns [1, 2, 3]. What is the bug?",
+      "code": "def drop_evens(nums):\n    for n in nums:\n        if n % 2 == 0:\n            nums.remove(n)\n    return nums\n\nprint(drop_evens([1, 2, 2, 3]))",
+      "choices": [
+        "remove() shifts later elements left while the loop's cursor advances, so the item right after each removal is never examined",
+        "remove() deletes the last occurrence of the value, not the first",
+        "n % 2 == 0 is unreliable when the list contains duplicate values",
+        "Lists silently ignore remove() calls made inside a for loop"
+      ],
+      "answer": 0,
+      "explain": "The for loop walks positions 0, 1, 2... while remove() shifts everything after the deleted item one slot left — so the second 2 slides into the just-visited position and is skipped. Never mutate a list you are iterating; build a new one ([n for n in nums if n % 2]) or iterate over a copy. The same rule applies to dicts, which raise RuntimeError instead of failing silently."
+    },
+    {
+      "id": "pf-l1-016",
+      "type": "bug",
+      "prompt": "Both calls return a dict containing BOTH keys — a is {'hp': 10, 'mp': 5}. What is the bug?",
+      "code": "def remember(key, value, cache={}):\n    cache[key] = value\n    return cache\n\na = remember(\"hp\", 10)\nb = remember(\"mp\", 5)",
+      "choices": [
+        "The default dict is created once at def time, so every call that omits cache shares and mutates the same object",
+        "return cache returns a live view that merges automatically with previous returns",
+        "Dict arguments are always global in Python functions",
+        "The bug is in the calls: keyword arguments are required for dict parameters"
+      ],
+      "answer": 0,
+      "explain": "Same disease as the mutable-default list: the {} is evaluated once when def runs, and that single dict lives on between calls. Sometimes this is even used deliberately as a cheap cache — but an accidental version leaks state across requests, which in a web service means one user's data appearing in another's response. Default to cache=None plus an explicit 'if cache is None' guard."
+    },
+    {
+      "id": "pf-l1-017",
+      "type": "bug",
+      "prompt": "tally(['a', 'b']) crashes immediately. What is wrong?",
+      "code": "def tally(words):\n    counts = {}\n    for w in words:\n        counts[w] += 1\n    return counts",
+      "choices": [
+        "counts[w] on a key that is not yet present raises KeyError; use counts.get(w, 0) + 1, setdefault, or collections.Counter",
+        "Strings must be hashed explicitly with hash(w) before use as dict keys",
+        "+= cannot be used on dict values; it must be written counts[w] = counts[w] + 1",
+        "The dict needs to be pre-populated with every possible word mapped to 0"
+      ],
+      "answer": 0,
+      "explain": "counts[w] += 1 reads counts[w] first, and the first time a word appears there is nothing to read — KeyError. The three idiomatic fixes are counts[w] = counts.get(w, 0) + 1, counts.setdefault(w, 0) followed by counts[w] += 1, or just collections.Counter(words), which is what a reviewer would expect in real code. Knowing all three and when each reads best is a standard interview checkpoint."
+    },
+    {
+      "id": "pf-l1-018",
+      "type": "bug",
+      "prompt": "This works, but a reviewer flags it for large inputs. What is the accepted criticism?",
+      "code": "def render_log(lines):\n    page = \"\"\n    for line in lines:\n        page += line + \"\\n\"\n    return page",
+      "choices": [
+        "Strings are immutable, so each += may copy everything built so far — quadratic worst case; collect parts in a list and ''.join them",
+        "The \\n characters accumulate as separate objects and leak memory",
+        "page += line mutates line as a side effect, corrupting the caller's list",
+        "join is required for correctness because += breaks on non-ASCII text"
+      ],
+      "answer": 0,
+      "explain": "A str can never be modified, so conceptually every += allocates a new string and copies both halves — O(n²) total over n lines. CPython has a refcount trick that often makes += behave in-place, but it is an implementation detail that vanishes the moment a second reference exists; '\\n'.join(lines) is guaranteed O(total length) and is what reviewers expect."
+    },
+    {
+      "id": "pf-l1-019",
+      "type": "bug",
+      "prompt": "is_quit sometimes returns False even when command == 'quit' is True. Why?",
+      "code": "def is_quit(command):\n    return command is \"quit\"",
+      "choices": [
+        "is tests object identity, not equality — two equal strings need not be the same object; use == for value comparison",
+        "The string 'quit' is interned, so is always returns True and the bug must be elsewhere",
+        "is only works between variables, never against a literal",
+        "str.compare() is required for string comparison in Python 3"
+      ],
+      "answer": 0,
+      "explain": "is asks 'same object in memory?', == asks 'equal value?'. CPython interns many string literals, so this bug often passes casual testing — then fails on a string built at runtime (e.g. input().strip()), which is exactly what makes it dangerous. Python 3.8+ even emits a SyntaxWarning for is against a literal. Reserve is for singletons: x is None."
+    },
+    {
+      "id": "pf-l1-020",
+      "type": "bug",
+      "prompt": "After calling with_defaults({'theme': 'dark'}, DEFAULTS), the module-level DEFAULTS dict itself now contains 'theme': 'dark'. Why?",
+      "code": "def with_defaults(settings, defaults):\n    merged = defaults\n    merged.update(settings)\n    return merged",
+      "choices": [
+        "merged = defaults binds a second name to the same dict, so update() mutates the caller's DEFAULTS; copy first: merged = dict(defaults)",
+        "update() always modifies both the receiver and its argument",
+        "Assignment inside a function automatically makes module-level dicts global",
+        "Dict literals passed as arguments are cached between calls"
+      ],
+      "answer": 0,
+      "explain": "Assignment never copies in Python — merged and defaults are two names for one dict, so update() corrupts the shared DEFAULTS for every future caller. This is the aliasing bug in its most expensive production form: a slowly-mutating global config. Fix with merged = dict(defaults) then update, or in 3.9+ simply return defaults | settings, which builds a new dict."
+    },
+    {
+      "id": "pf-l1-021",
+      "type": "bug",
+      "prompt": "The tests require first-appearance order and this fails intermittently. What is wrong?",
+      "code": "def dedupe_names(names):\n    return list(set(names))",
+      "choices": [
+        "Sets do not preserve insertion order — iteration order depends on hashing; use list(dict.fromkeys(names)) for an ordered dedupe",
+        "list() shuffles its input by default for security reasons",
+        "set() keeps the last occurrence of each value, reversing the order",
+        "Nothing is wrong — sets preserve insertion order since Python 3.7"
+      ],
+      "answer": 0,
+      "explain": "The 3.7 insertion-order guarantee is for dicts only; set iteration order is an artifact of hash values and table size, and for str keys it can even differ between runs (hash randomization). list(dict.fromkeys(names)) dedupes while keeping first-appearance order, in O(n). 'Order-dependent output built from a set' is a classic source of flaky tests in real codebases."
+    },
+    {
+      "id": "pf-l1-022",
+      "type": "truth",
+      "prompt": "True or false: in a Python script, x = 1000 followed by y = 1000 guarantees that x is y is True, because equal integers are always the same object.",
+      "code": null,
+      "choices": [
+        "True",
+        "False"
+      ],
+      "answer": 1,
+      "explain": "False — identity of equal numbers is never a language guarantee. CPython happens to cache small ints (-5 to 256) and may fold constants within one code object, so 'is' on ints works just often enough to breed bugs before failing. The rule to say in an interview: == compares values, is compares identity, and is is only for singletons like None."
+    },
+    {
+      "id": "pf-l1-023",
+      "type": "truth",
+      "prompt": "True or false: for large collections, 'x in my_list' is O(n) while 'x in my_set' and 'key in my_dict' are O(1) on average.",
+      "code": null,
+      "choices": [
+        "True",
+        "False"
+      ],
+      "answer": 0,
+      "explain": "True — a list scan compares element by element, while sets and dicts hash the key and jump straight to its bucket. This is the single highest-leverage micro-decision in everyday Python: a membership check inside a loop against a list turns O(n·m); pre-building a set makes it O(n+m). At 100k elements the difference is roughly four orders of magnitude per lookup."
+    },
+    {
+      "id": "pf-l1-024",
+      "type": "truth",
+      "prompt": "True or false: since Python 3.7 the language guarantees that dicts iterate in insertion order.",
+      "code": null,
+      "choices": [
+        "True",
+        "False"
+      ],
+      "answer": 0,
+      "explain": "True — it became a CPython implementation detail in 3.6 (the compact-dict layout) and an official language guarantee in 3.7, which is why plain dict has largely replaced OrderedDict. Two cautions for production: insertion order is not sorted order, and the guarantee does not extend to sets."
+    },
+    {
+      "id": "pf-l1-025",
+      "type": "truth",
+      "prompt": "True or false: Python's sort is stable — elements that compare equal keep their original relative order — so you can sort by a secondary key first and a primary key second to get a multi-level sort.",
+      "code": null,
+      "choices": [
+        "True",
+        "False"
+      ],
+      "answer": 0,
+      "explain": "True — Timsort (used by both list.sort and sorted) guarantees stability, and the sort-by-secondary-then-primary trick depends on it. The other standard technique is a single pass with a tuple key, e.g. key=lambda w: (-w.count, w.word) for 'count descending, then word ascending' — expect an interviewer to ask for exactly that."
+    },
+    {
+      "id": "pf-l1-026",
+      "type": "truth",
+      "prompt": "True or false: any tuple can be used as a dictionary key, because tuples are immutable.",
+      "code": null,
+      "choices": [
+        "True",
+        "False"
+      ],
+      "answer": 1,
+      "explain": "False — a dict key must be hashable, and a tuple is only hashable if everything inside it is: ([1], 2) raises TypeError because the list inside can change, which would silently break the hash table. Tuple immutability is shallow (it freezes the slots, not the contents). Tuples of strings/numbers make excellent composite keys, e.g. cache[(user_id, page)]."
+    }
+  ]
+}

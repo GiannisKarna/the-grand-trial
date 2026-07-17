@@ -1,0 +1,32 @@
+{
+  "player": {
+    "name": "Apprentice",
+    "xp": 0,
+    "level": 1
+  },
+  "regions": {
+    "rune-plains": {
+      "unlocked": true
+    },
+    "gatekeepers-forge": {
+      "unlocked": false
+    },
+    "great-library": {
+      "unlocked": false
+    },
+    "war-council": {
+      "unlocked": false
+    },
+    "dragons-keep": {
+      "unlocked": false
+    }
+  },
+  "quests": {},
+  "curses": [],
+  "drills": {
+    "embers": 0,
+    "last_day": null,
+    "history": []
+  },
+  "log": []
+}
