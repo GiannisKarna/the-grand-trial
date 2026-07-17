@@ -1,0 +1,216 @@
+{
+  "id": "dragon-gauntlet",
+  "title": "The Dragon's Keep",
+  "dragon_name": "Veldrath, the Last Question",
+  "hp": 19,
+  "hearts": 5,
+  "phase1": { "count": 10, "timer_sec": 20 },
+  "phase2": { "count": 8, "timer_sec": 30 },
+  "phase3_picks": 3,
+  "phase3": [
+    {
+      "id": "dg-p3-rag-scale",
+      "title": "The Flooded Archive",
+      "eyebrow": "Scale a RAG API",
+      "scenario": "Your lore-retrieval service (RAG) has grown from 50 to 500 requests per second in a month. The LLM calls still return in ~1.2 s, but vector-search p95 has climbed from 80 ms to 900 ms and the single search node's CPU is pinned at 100%. The index is 2M chunks (~6 GB) and fits comfortably in one node's memory; the corpus changes slowly. Answer quality must not drop. What is your first move?",
+      "choices": [
+        {
+          "label": "Add read replicas of the vector index behind a load balancer",
+          "stats": "Latency: p95 back toward ~80 ms · Gold: +2 nodes/month · Complexity: +1 (write fan-out, replica lag) · Quality: unchanged"
+        },
+        {
+          "label": "Upgrade to a larger LLM so better generation offsets weaker retrieval",
+          "stats": "Latency: worse — the big model is slower and retrieval is untouched · Gold: 3–10x per call · Complexity: 0 · Quality: marginal gain at best"
+        },
+        {
+          "label": "Cut retrieval top_k from 8 to 1 so each search does less work",
+          "stats": "Latency: −10–20 ms at best · Gold: 0 · Complexity: 0 · Quality: recall craters on answers that need several chunks"
+        },
+        {
+          "label": "Precompute and cache the final answer for every likely question",
+          "stats": "Latency: ~0 on a hit · Gold: large precompute bill · Complexity: +2 · Quality: goes stale on every corpus update"
+        }
+      ],
+      "answer": 0,
+      "debrief": {
+        "summary": "The workload is read-heavy, the node is CPU-bound, and the whole index fits in memory: that is the textbook case for scaling reads horizontally with replicas. Pay attention to what it costs you — every index write now fans out to all replicas, and replica lag means a freshly-ingested scroll may be unfindable for a few seconds. Acceptable here because the corpus changes slowly.",
+        "verdicts": [
+          "BEST. CPU-bound + read-heavy + index-fits-in-RAM means replicas scale search almost linearly. The price is write fan-out and replica lag — cheap for a slow-changing corpus, and the boring, correct first move.",
+          "Fixes the wrong bottleneck. The 900 ms lives in retrieval; a bigger model raises cost 3–10x and adds its own latency while the search node stays pinned at 100%.",
+          "ANN engines (HNSW-style) spend their time traversing the index graph, not copying results — shrinking top_k from 8 to 1 saves almost nothing, and answers that needed several chunks of evidence lose them.",
+          "The query space of a search box is open-ended: hit rate on precomputed answers rounds to zero for the long tail, the precompute bill is real, and every corpus update silently serves stale answers."
+        ]
+      }
+    },
+    {
+      "id": "dg-p3-llm-spend",
+      "title": "The Gold-Devouring Oracle",
+      "eyebrow": "Cut LLM spend",
+      "scenario": "Your answer-oracle spends 40,000 gold a month on a frontier LLM. Logs show ~70% of queries are short, routine questions that a small model answers just as well in offline tests; the other 30% are genuinely hard. The quality floor is contractual: hard queries may not degrade. How do you cut the bill?",
+      "choices": [
+        {
+          "label": "Route: a cheap classifier sends routine queries to the small model, hard ones to the frontier model, thresholds tuned on an eval set",
+          "stats": "Gold: −40–60% · Latency: +20–50 ms for the classifier · Complexity: +1 (router + evals to maintain) · Quality: held — and proven by measurement"
+        },
+        {
+          "label": "Send every query to the small model — it handled 70% of them fine",
+          "stats": "Gold: −85% · Latency: faster · Complexity: 0 · Quality: the hard 30% visibly degrades — the contractual floor is breached"
+        },
+        {
+          "label": "Halve max_tokens on every call",
+          "stats": "Gold: −0–20%, and only on answers that were going to run long · Latency: shorter tails · Complexity: 0 · Quality: long answers truncate mid-thought"
+        },
+        {
+          "label": "Add an exact-match response cache in front of the oracle",
+          "stats": "Gold: −5–10% · Latency: ~0 on a hit · Complexity: +1 · Quality: unchanged — but paraphrased queries never hit"
+        }
+      ],
+      "answer": 0,
+      "debrief": {
+        "summary": "When most traffic is easy but some is contractually hard, model routing captures most of the spend win while an eval set proves the quality floor still holds. The cost is honest: you now own a classifier, its thresholds, and the evals that keep it truthful — misrouted hard queries are the failure mode, so the eval set is not optional.",
+        "verdicts": [
+          "BEST. The routine 70% of calls drop to small-model prices — but short calls were already the cheap ones, so 70% of calls is less than 70% of the spend: the bill roughly halves. The floor is enforced by measurement, not hope. You pay in moving parts: the router itself can misroute, which is why it ships with an eval set.",
+          "Cheapest and fastest — and it breaches the floor. The hard 30% degrades in production, which is exactly what the contract forbids. This is routing with the safety net deleted.",
+          "max_tokens is a cap, not a compressor: answers that need the tokens get cut off mid-sentence (a user-visible failure), answers that did not were already cheap. It also does nothing about the frontier model's unit price — the actual lever here.",
+          "Users phrase the same question a hundred ways; exact-match hit rates on natural language are single-digit. Fine as a bonus layer on top of routing, useless as the main lever."
+        ]
+      }
+    },
+    {
+      "id": "dg-p3-p99-burst",
+      "title": "The Stuttering Sentinel",
+      "eyebrow": "Fix p99 spikes",
+      "scenario": "Your assistant API sits in front of a provider hard-limited to 100 requests/sec. Normal load is 60 req/s and p50 is 400 ms — but marketing blasts cause one-minute bursts of 300 req/s. During bursts p99 explodes to 12 s, timeouts cascade, and users who time out retry, making it worse. What do you build?",
+      "choices": [
+        {
+          "label": "Autoscale API pods from 4 to 16 during bursts",
+          "stats": "Latency: unchanged · Gold: 4x pods during bursts · Complexity: +1 · Quality: unchanged — the provider cap is still 100 req/s"
+        },
+        {
+          "label": "Raise the client timeout from 15 s to 60 s",
+          "stats": "Latency: p99 grows toward 60 s · Gold: 0 · Complexity: 0 · Quality: users stare at spinners instead of failing fast"
+        },
+        {
+          "label": "Retry every 429/timeout immediately, up to 10 times",
+          "stats": "Latency: worse — retries multiply burst load from 300 toward 3,000 req/s · Gold: wasted calls · Complexity: 0 · Quality: outage risk"
+        },
+        {
+          "label": "Bounded queue + outbound rate limiter at ~95 req/s toward the provider; shed the overflow with an immediate friendly 'busy — retry shortly' and jittered backoff",
+          "stats": "Latency: p50/p95 stay flat for admitted requests · Gold: ~0 · Complexity: +1 · Quality: some burst requests get 'busy' instead of an answer — by design"
+        }
+      ],
+      "answer": 3,
+      "debrief": {
+        "summary": "You cannot push 300 req/s through a 100 req/s door. The only honest options are smoothing (a bounded queue) and refusing (load shedding) — everything else either hides the overload or amplifies it. Admission control keeps admitted traffic fast and turns overload into a designed, polite failure instead of a cascading one.",
+        "verdicts": [
+          "Scales the part that was never the bottleneck. Sixteen pods now hammer the same 100 req/s provider cap harder, and you pay for the privilege. Find the binding constraint before scaling anything.",
+          "Hides the symptom inside a longer spinner. Requests that would have timed out at 15 s now hold connections for 60 s, resource pressure grows, and the experience is worse than an honest fast failure.",
+          "The retry storm is the classic self-inflicted outage: every failure spawns more load on an already-saturated system. Retries are fine — with caps, exponential backoff, and jitter — and never naive during known overload.",
+          "BEST. Admitted traffic stays inside the cap (fast, predictable), excess gets an immediate cheap retryable answer, and jittered backoff stops the herd from returning in lockstep. The trade is explicit: during bursts, some users are told 'busy' — a choice you made, not one that happened to you."
+        ]
+      }
+    },
+    {
+      "id": "dg-p3-vector-store",
+      "title": "The Two Reliquaries",
+      "eyebrow": "Vector DB vs pgvector",
+      "scenario": "A two-person team is adding semantic search to an app that already runs on Postgres. Corpus: 200k chunks (~600 MB of vectors), growing slowly. Load: ~20 searches/sec with a 200 ms p95 budget. Every search must join against relational data (permissions, authors) before results are shown. Where do the vectors live?",
+      "choices": [
+        {
+          "label": "Adopt a dedicated managed vector database",
+          "stats": "Latency: fast search + a network hop + a second query for the permission join · Gold: +new monthly bill · Complexity: +2 (second store, sync pipeline, permissions duplicated) · Quality: same recall at this scale"
+        },
+        {
+          "label": "pgvector with an HNSW index inside the existing Postgres",
+          "stats": "Latency: well inside 200 ms at 200k vectors · Gold: ~0 new · Complexity: +0.5 (an extension + index tuning) · Quality: same recall; the permission join is one SQL query"
+        },
+        {
+          "label": "Keep vectors in application memory and brute-force scan with NumPy",
+          "stats": "Latency: fine on one node · Gold: 0 · Complexity: +1 hidden (every replica loads 600 MB, rebuild on deploy, no persistence story) · Quality: exact search"
+        },
+        {
+          "label": "Deploy Elasticsearch with dense_vector now, in case hybrid keyword search is needed later",
+          "stats": "Latency: fine · Gold: +cluster · Complexity: +2 (JVM cluster ops for a two-person team) · Quality: same today"
+        }
+      ],
+      "answer": 1,
+      "debrief": {
+        "summary": "200k vectors at 20 QPS is small. The deciding constraints are the permission join and the two-person team: pgvector keeps search in the same store as the data it must join with, at near-zero new operational surface. The honest caveat: this answer is scale-dependent, not ideology — at tens of millions of vectors or thousands of QPS, a dedicated engine earns its keep.",
+        "verdicts": [
+          "The right tool at 50M vectors, the wrong one here: you buy a second system to operate, a sync pipeline to keep consistent, and a permissions model to duplicate — for recall and latency that pgvector already delivers at this size.",
+          "BEST. One store, one query for search plus the permission join, near-zero new ops. The trade: you tune the HNSW index yourself and Postgres now carries search load — measure it, and revisit honestly if the corpus grows 100x.",
+          "Workable as a prototype, but every app replica now ships 600 MB of state, updates need a rebuild-and-reload dance, and search dies with the process. You would slowly reinvent a database, badly.",
+          "Speculative generality: a JVM cluster is a heavy pet for a maybe-requirement, and if hybrid search does become real, Postgres full-text plus pgvector covers it at this scale. Buy the second system when the requirement exists."
+        ]
+      }
+    },
+    {
+      "id": "dg-p3-evals",
+      "title": "The Mirror of Judgement",
+      "eyebrow": "Build vs buy evals",
+      "scenario": "Your two-engineer team ships prompt and retrieval changes weekly. Twice last month a change silently degraded answers and users found out first. You need regression evals before the next release. Budget is tight and the domain is niche — internal legal policies. What do you do first?",
+      "choices": [
+        {
+          "label": "Buy an enterprise eval platform first, wire it up, then think about test cases",
+          "stats": "Gold: +platform fee · Time: weeks of integration · Complexity: +1 · Quality: dashboards — but generic benchmarks know nothing of your legal policies"
+        },
+        {
+          "label": "Ship behind a thumbs-up/down widget and watch the feedback",
+          "stats": "Gold: ~0 · Time: signal lags days-to-weeks · Complexity: 0 · Quality: sparse, biased — and users are still your regression detectors"
+        },
+        {
+          "label": "Curate ~100 golden cases from real logged failures, score with an LLM judge, audit a human sample weekly, wire it into CI",
+          "stats": "Gold: judge-call pennies per run · Time: running this week · Complexity: +1 (case upkeep, judge-drift audits) · Quality: regressions caught pre-release on YOUR traffic"
+        },
+        {
+          "label": "Have both engineers manually review every release candidate's outputs",
+          "stats": "Gold: engineer-days weekly · Time: slow releases · Complexity: 0 · Quality: inconsistent graders; coverage shrinks as the case set grows"
+        }
+      ],
+      "answer": 2,
+      "debrief": {
+        "summary": "The scarce asset in evals is not tooling — it is a curated, domain-true dataset. A hundred cases mined from your real failures plus an audited LLM judge catches the regressions you actually ship, for pennies, this week. The audit is not decoration: an unwatched judge drifts, and a judge score is a proxy for quality, never ground truth.",
+        "verdicts": [
+          "Tooling before data measures nothing: generic benchmarks do not speak your legal domain, and you still have to curate cases — the platform just delays that work by weeks and adds a fee.",
+          "This formalizes the current failure mode: feedback is sparse (few users click), biased (angry users click most), and lagging — the damage is done before the signal arrives. Users remain your test suite.",
+          "BEST. Cases mined from real failures match your actual traffic; CI wiring makes the check unskippable; the weekly human audit keeps the judge honest. The ongoing cost is real: the case set must grow with every new failure class or it goes stale.",
+          "Honest but unscalable: full-coverage human review of weekly releases consumes the whole team, grading drifts between reviewers, and coverage quietly shrinks. Humans belong on the audit sample, not the full sweep."
+        ]
+      }
+    },
+    {
+      "id": "dg-p3-ttft",
+      "title": "The Breath Before the First Word",
+      "eyebrow": "Tame time-to-first-token",
+      "scenario": "Your chat assistant sends a 3,000-token system prompt (instructions + tool schemas) on every turn. Users report that it 'hangs': nothing appears for seconds, then a whole answer at once. Measured: time-to-first-token p95 is 7 s; total generation is 9 s. Your provider supports response streaming and caching of a repeated prompt prefix. What ships this sprint?",
+      "choices": [
+        {
+          "label": "Move the service to a region geographically closer to users",
+          "stats": "Latency: −30–80 ms of round-trip · Gold: a migration · Complexity: +1 · Quality: unchanged — the 7 s is prefill and provider queueing, not the wire"
+        },
+        {
+          "label": "Stream the response tokens AND cache the static 3k-token prompt prefix with the provider",
+          "stats": "Perceived wait: 7 s → first words in well under 2 s · Gold: cached prefix bills at a discount · Complexity: +1 (SSE plumbing, cache-aware prompt layout) · Quality: unchanged"
+        },
+        {
+          "label": "Delete the tool schemas from the system prompt to shrink prefill",
+          "stats": "Latency: TTFT drops with prefix size · Gold: cheaper per call · Complexity: 0 · Quality: the assistant can no longer call its tools — capability amputated"
+        },
+        {
+          "label": "Precompute likely answers overnight and serve them instantly",
+          "stats": "Latency: ~0 on a hit · Gold: nightly batch spend · Complexity: +2 · Quality: free-form chat inputs are unknowable in advance — hit rate ~0"
+        }
+      ],
+      "answer": 1,
+      "debrief": {
+        "summary": "Two levers, one move — each fixes a different half of the symptom. Prefix caching attacks the 7-second blank: the static 3k tokens stop being re-processed on every turn (and bill at a discount), so the first token is ready far sooner. Streaming attacks the 'whole answer at once': tokens render as they are generated, so the remaining wait is visible progress instead of a wall. The gotcha that bites in production: the cached prefix must be byte-identical and sit at the front of the prompt — a timestamp or a reordered tool schema silently kills every cache hit.",
+        "verdicts": [
+          "A misdiagnosis: the wire contributes tens of milliseconds; the 7 s lives in prompt prefill and provider queueing. You would run a whole migration to shave roughly 1% of the wait.",
+          "BEST. Prefix caching removes the repeated 3k-token prefill, so the first token is ready in a fraction of the old 7 s; streaming then shows each word the moment it exists instead of holding the finished answer hostage. The failure mode to respect: any variation inside the 'static' prefix silently defeats the cache — layout discipline is part of the feature.",
+          "It genuinely shrinks TTFT — by amputating the assistant's tools. Trading capability for latency without being asked is a quality regression users will find on day one.",
+          "Precomputation needs predictable inputs; free-form chat has none. The nightly spend buys a cache nobody hits while every live conversation still pays full price."
+        ]
+      }
+    }
+  ]
+}

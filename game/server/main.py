@@ -30,8 +30,11 @@ BACKUP_FILE = STATE_DIR / "progress.backup.json"
 CONTENT_DIR = GAME_DIR / "content"
 QUESTS_FILE = CONTENT_DIR / "quests.json"
 QUIZBANKS_DIR = CONTENT_DIR / "quizbanks"
+MINIGAMES_DIR = CONTENT_DIR / "minigames"
 WEB_DIR = GAME_DIR / "web"
 
+# "trials" (added in Phase 2) is deliberately NOT required: older saves lack
+# it, so PUT accepts it without demanding it and GET merges in a default.
 REQUIRED_STATE_KEYS = ("player", "regions", "quests", "curses", "drills", "log")
 BANK_ID_RE = re.compile(r"^[a-z0-9-]+$")
 
@@ -75,7 +78,12 @@ def health() -> dict[str, bool]:
 @app.get("/api/state")
 def get_state() -> Any:
     with _STATE_LOCK:
-        return _load_json(STATE_FILE, "progress.json")
+        state = _load_json(STATE_FILE, "progress.json")
+    # Older saves predate the "trials" key; merge the default so clients can
+    # rely on it being present.
+    if isinstance(state, dict) and "trials" not in state:
+        state["trials"] = {}
+    return state
 
 
 def _replace_with_retry(src: Path, dst: Path, attempts: int = 6) -> None:
@@ -120,11 +128,32 @@ def get_quests() -> Any:
     return _load_json(QUESTS_FILE, "quests.json")
 
 
+@app.get("/api/content/quizbanks")
+def list_quizbanks() -> dict[str, list[str]]:
+    if not QUIZBANKS_DIR.is_dir():
+        return {"banks": []}
+    banks = sorted(
+        path.stem
+        for path in QUIZBANKS_DIR.glob("*.json")
+        if BANK_ID_RE.fullmatch(path.stem)
+    )
+    return {"banks": banks}
+
+
 @app.get("/api/content/quizbanks/{bank_id}")
 def get_quizbank(bank_id: str) -> Any:
     if not BANK_ID_RE.fullmatch(bank_id):
         raise HTTPException(status_code=404, detail="quiz bank not found")
     return _load_json(QUIZBANKS_DIR / f"{bank_id}.json", f"quiz bank '{bank_id}'")
+
+
+@app.get("/api/content/minigames/{minigame_id}")
+def get_minigame_config(minigame_id: str) -> Any:
+    if not BANK_ID_RE.fullmatch(minigame_id):
+        raise HTTPException(status_code=404, detail="minigame config not found")
+    return _load_json(
+        MINIGAMES_DIR / f"{minigame_id}.json", f"minigame config '{minigame_id}'"
+    )
 
 
 # --- Static client (registered AFTER the API routes) -------------------------

@@ -130,6 +130,14 @@
       if (root.parentNode) root.parentNode.removeChild(root);
     }
 
+    /* Engine-driven abort (Esc → Abandon): the engine settles the result
+     * itself and clears the overlay; this hook makes the game tear down its
+     * own listeners/DOM instead of running on detached nodes. */
+    overlayEl.addEventListener("grandtrial:abort", function () {
+      state.finished = true;
+      cleanup();
+    }, { once: true });
+
     function finish(completed) {
       if (state.finished) return;
       state.finished = true;

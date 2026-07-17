@@ -470,3 +470,363 @@ html, body {
 
 .fatal-box { text-align: center; }
 .fatal-box .fatal-msg { font-size: 15px; color: #7c2f22; font-weight: bold; margin: 10px 0 16px; }
+
+/* ============================================================
+   Phase 2/3 — Region Trials, Curse Codex, SFX toggle, Dragon,
+   abort confirm, grand victory
+   ============================================================ */
+
+/* ---------- HUD: curse button + mute toggle ---------- */
+
+.btn-curse {
+  position: relative;
+  color: #f5c9c0;
+  background: linear-gradient(180deg, #4a2430 0%, #2e1520 100%);
+  border-color: #7c3a4a;
+  overflow: visible;
+}
+
+.btn-curse:hover:not(:disabled) {
+  filter: brightness(1.3);
+  box-shadow: 0 0 10px rgba(192, 52, 52, 0.5);
+}
+
+.curse-pop { animation: curse-pop 0.5s ease-out; }
+
+@keyframes curse-pop {
+  0%   { transform: scale(1); }
+  35%  { transform: scale(1.35); box-shadow: 0 0 18px rgba(192, 52, 52, 0.9); }
+  100% { transform: scale(1); }
+}
+
+.curse-float {
+  position: absolute;
+  left: 50%;
+  top: -4px;
+  pointer-events: none;
+  font-size: 18px;
+  color: #ff8f8f;
+  text-shadow: 0 0 8px rgba(192, 52, 52, 0.9);
+  animation: curse-float 1.4s ease-out forwards;
+}
+
+@keyframes curse-float {
+  0%   { opacity: 0; transform: translate(-50%, 0) scale(0.6); }
+  20%  { opacity: 1; }
+  100% { opacity: 0; transform: translate(-50%, -34px) scale(1.4); }
+}
+
+.btn-icon {
+  font-size: 16px;
+  line-height: 1;
+  padding: 5px 8px;
+  background: none;
+  border: 2px solid #4a3b22;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: filter 0.12s ease;
+}
+
+.btn-icon:hover { filter: brightness(1.4); border-color: #6b5333; }
+
+/* ---------- Region Trial buttons ---------- */
+
+.btn-trial {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  padding: 8px 12px 7px;
+  background: linear-gradient(180deg, #3a2c5e 0%, #241a3d 100%);
+  border-color: #5f4b8f;
+}
+
+.btn-trial:hover:not(:disabled) {
+  filter: brightness(1.25);
+  box-shadow: 0 0 12px rgba(122, 95, 175, 0.5);
+}
+
+.trial-icon { font-size: 20px; line-height: 1; }
+
+.trial-name { font-size: 13px; line-height: 1.2; }
+
+.trial-sub {
+  font-size: 9px;
+  font-weight: normal;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #b3a3d6;
+}
+
+/* ---------- THE DRAGON (dragons-keep boss button) ---------- */
+
+.btn-dragon {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  padding: 9px 14px 8px;
+  background: linear-gradient(180deg, #6e1f1f 0%, #35090f 100%);
+  border-color: #b03a2a;
+  box-shadow: 0 0 12px rgba(192, 52, 52, 0.35), inset 0 0 18px rgba(0, 0, 0, 0.5);
+  animation: dragon-smolder 2.8s ease-in-out infinite;
+}
+
+.btn-dragon:hover:not(:disabled) {
+  filter: brightness(1.3);
+  box-shadow: 0 0 22px rgba(224, 74, 58, 0.7);
+}
+
+.btn-dragon .dragon-icon {
+  font-size: 24px;
+  line-height: 1;
+  filter: drop-shadow(0 0 6px rgba(224, 74, 58, 0.8));
+}
+
+.btn-dragon .dragon-label {
+  font-size: 15px;
+  letter-spacing: 0.14em;
+  color: #ffb49b;
+  text-shadow: 0 0 10px rgba(224, 74, 58, 0.8);
+}
+
+.btn-dragon .trial-sub { color: #e8a0a0; }
+
+@keyframes dragon-smolder {
+  0%, 100% { box-shadow: 0 0 10px rgba(192, 52, 52, 0.3), inset 0 0 18px rgba(0, 0, 0, 0.5); }
+  50%      { box-shadow: 0 0 20px rgba(224, 74, 58, 0.6), inset 0 0 18px rgba(0, 0, 0, 0.5); }
+}
+
+/* ---------- Curse Codex panel ---------- */
+
+.codex-panel h2 { color: #5c1e14; }
+
+.codex-body { margin-top: 4px; }
+
+.codex-loading,
+.codex-empty {
+  font-style: italic;
+  font-size: 14px;
+  color: #6e5836;
+  padding: 8px 2px;
+}
+
+.codex-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin: 6px 0;
+}
+
+.codex-row {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  padding: 9px 11px;
+  background: rgba(120, 30, 30, 0.09);
+  border: 1px solid #a15a4a;
+  border-radius: 4px;
+}
+
+.codex-mark {
+  flex: 0 0 20px;
+  font-size: 16px;
+  line-height: 1.2;
+  color: #7c2f22;
+  text-align: center;
+}
+
+.codex-main { flex: 1; min-width: 0; }
+
+.codex-prompt {
+  font-size: 14px;
+  font-weight: bold;
+  color: #3a2610;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.codex-meta {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  align-items: baseline;
+  margin-top: 3px;
+  font-size: 11px;
+  color: #6e5836;
+}
+
+.codex-bank {
+  font-family: Consolas, 'Courier New', monospace;
+  font-size: 10px;
+  background: #241c10;
+  color: #ffd97a;
+  padding: 1px 6px;
+  border-radius: 3px;
+}
+
+.codex-hits { font-weight: bold; color: #7c2f22; letter-spacing: 0.04em; }
+
+.codex-misses { font-style: italic; }
+
+.codex-flavor {
+  margin-top: 4px;
+  font-size: 11.5px;
+  font-style: italic;
+  color: #8a5a2a;
+}
+
+.codex-cleansed { margin-top: 12px; }
+
+.codex-cleansed summary {
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: bold;
+  color: #1e4a1c;
+  padding: 4px 2px;
+}
+
+.codex-row-cleansed {
+  background: rgba(60, 110, 60, 0.1);
+  border-color: #7a9a6a;
+  opacity: 0.8;
+}
+
+.codex-row-cleansed .codex-mark { color: #1e4a1c; }
+
+.codex-row-cleansed .codex-prompt {
+  text-decoration: line-through;
+  color: #5a6a4a;
+}
+
+.codex-row-cleansed .codex-hits { color: #1e4a1c; }
+
+/* ---------- cleanse toast ---------- */
+
+.toast-cleanse {
+  border-color: #4fae7c;
+  color: #c9f0d9;
+  box-shadow: 0 0 14px rgba(79, 174, 124, 0.5), 0 4px 16px rgba(0, 0, 0, 0.7);
+}
+
+/* ---------- in-world abort confirm ---------- */
+
+.abort-box { text-align: center; width: min(460px, 92vw); }
+
+.abort-box h2 { margin-right: 0; }
+
+.abort-actions {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+  margin-top: 14px;
+}
+
+.abort-actions .btn { min-width: 140px; }
+
+/* ---------- grand victory (the Dragon is slain) ---------- */
+
+.grand-victory {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background:
+    radial-gradient(ellipse at 50% 45%, rgba(212, 175, 55, 0.4) 0%, rgba(40, 24, 6, 0.85) 62%, rgba(8, 6, 14, 0.95) 100%);
+  animation: gv-fade 9s ease forwards;
+}
+
+.gv-rays {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 2200px;
+  height: 2200px;
+  margin: -1100px 0 0 -1100px;
+  background: repeating-conic-gradient(
+    rgba(255, 224, 138, 0.14) 0deg 7deg,
+    transparent 7deg 22deg
+  );
+  animation: gv-spin 22s linear infinite;
+}
+
+.gv-spark {
+  position: absolute;
+  bottom: -20px;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #ffe08a;
+  box-shadow: 0 0 12px 3px rgba(255, 224, 138, 0.8);
+  animation: gv-spark-rise 3s linear infinite;
+}
+
+.gv-core {
+  position: relative;
+  text-align: center;
+  padding: 0 20px;
+}
+
+.gv-title {
+  font-size: clamp(40px, 9vw, 84px);
+  font-weight: bold;
+  letter-spacing: 0.14em;
+  color: #ffe08a;
+  text-shadow:
+    0 0 24px rgba(212, 175, 55, 0.95),
+    0 3px 6px #000,
+    0 0 70px rgba(255, 224, 138, 0.6);
+  animation: gv-title-in 1.2s cubic-bezier(0.2, 1.5, 0.4, 1);
+}
+
+.gv-sub {
+  margin-top: 12px;
+  font-size: clamp(16px, 3vw, 24px);
+  font-style: italic;
+  color: #f0e3c0;
+  text-shadow: 0 1px 4px #000;
+  animation: gv-sub-in 1.6s ease both;
+  animation-delay: 0.7s;
+}
+
+@keyframes gv-spin { to { transform: rotate(360deg); } }
+
+@keyframes gv-fade {
+  0%   { opacity: 0; }
+  6%   { opacity: 1; }
+  88%  { opacity: 1; }
+  100% { opacity: 0; }
+}
+
+@keyframes gv-title-in {
+  0%   { opacity: 0; transform: scale(0.3); }
+  100% { opacity: 1; transform: scale(1); }
+}
+
+@keyframes gv-sub-in {
+  0%   { opacity: 0; transform: translateY(14px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes gv-spark-rise {
+  0%   { opacity: 0; transform: translateY(0) scale(0.6); }
+  12%  { opacity: 1; }
+  100% { opacity: 0; transform: translateY(-105vh) scale(1.15); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  /* stay visible, just still — the JS removes these elements on its own timer */
+  .btn-dragon,
+  .curse-pop,
+  .curse-float,
+  .gv-rays,
+  .gv-title,
+  .gv-sub,
+  .grand-victory {
+    animation: none !important;
+  }
+  .gv-spark { display: none; }
+}

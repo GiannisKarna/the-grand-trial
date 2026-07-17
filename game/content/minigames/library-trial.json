@@ -1,0 +1,321 @@
+{
+  "title": "The Sundered Scrolls",
+  "rounds": {
+    "relevance": [
+      {
+        "id": "rel-lease",
+        "domain": "Contract clause lookup",
+        "query": "My tenant is asking to keep a dog in unit 4B. Does the lease allow pets, and on what conditions?",
+        "corpus": "Searching: Harrowgate document archive — 6 documents, 214 indexed clauses.",
+        "chunks": [
+          {
+            "source": "Residential Lease (Unit 4B) — §9.1 Animals",
+            "text": "No animal may be kept on the Premises without the Landlord's prior written consent. Where consent is granted, the Tenant shall pay a refundable pet deposit of $400 and provide proof of current vaccinations. Consent may be withdrawn following any substantiated damage or disturbance complaint.",
+            "relevant": true,
+            "why": "This clause governs unit 4B directly: pets are allowed, but only with written consent — and it lists the exact conditions the question asks about."
+          },
+          {
+            "source": "Residential Lease (Unit 4B) — §9.2 and Schedule 4",
+            "text": "Notwithstanding §9.1, dogs exceeding 25 kg and any breed listed in Schedule 4 are prohibited. Assistance animals required for a disability are exempt from this Schedule and from the deposit requirement under applicable law.",
+            "relevant": true,
+            "why": "The exceptions are half the answer: breed and size limits, plus the assistance-animal carve-out, change what 'allowed' actually means for this dog."
+          },
+          {
+            "source": "Residential Lease (Unit 4B) — §12 Quiet Enjoyment",
+            "text": "The Tenant shall not cause or permit noise audible beyond the Premises between 22:00 and 07:00, including but not limited to barking dogs, amplified music, and power tools.",
+            "relevant": false,
+            "why": "Retrieved on the word 'dogs' — but it regulates noise, not whether a pet may be kept. Keyword overlap is not relevance."
+          },
+          {
+            "source": "Harrowgate Marketing Brochure — 'Life at Harrowgate'",
+            "text": "Harrowgate is a proudly pet-friendly community! Residents love our ground-floor dog run and the annual Pets of Harrowgate parade. Bring your four-legged family home.",
+            "relevant": false,
+            "why": "Semantically close — it really is about pets in this building — but a brochure has no contractual force. Source authority matters; filter by document type."
+          },
+          {
+            "source": "Office Sublease (44 Harrow St) — §9 Animals",
+            "text": "Animals of any kind are strictly prohibited within the demised premises at all times. Breach of this clause constitutes a material default under this Sublease.",
+            "relevant": false,
+            "why": "A near-perfect match — same clause number, same topic — from the wrong contract entirely. Without a metadata filter on the document, retrieval happily crosses files."
+          },
+          {
+            "source": "Residential Lease (Unit 4B) — §7 Security Deposit",
+            "text": "The Tenant shall deposit $1,500 as security for the performance of this Lease. The Landlord may deduct the reasonable costs of repairing damage beyond ordinary wear and tear.",
+            "relevant": false,
+            "why": "'Deposit' and 'damage' overlap with the pet clause's vocabulary, but this is the general security deposit — it says nothing about animals."
+          }
+        ],
+        "teaches": "A retriever does not know the answer — it knows what looks similar. Every trap here was plausibly retrieved: right keyword but wrong clause, right topic but wrong authority, right clause but wrong document. Production RAG fights this with metadata filters (which document? what type?), rerankers that read query and passage together, and retrieval evals that count exactly the mistakes you just faced."
+      },
+      {
+        "id": "rel-support",
+        "domain": "Support-log answer mining",
+        "query": "Customer on order #4821 says they were charged twice. How have we actually resolved duplicate charges before?",
+        "corpus": "Searching: support archive — 11,300 tickets and 240 knowledge-base articles.",
+        "chunks": [
+          {
+            "source": "Ticket #3390 — resolved (billing)",
+            "text": "Agent: Confirmed two captures against one order in the payment console. Refunded the second capture only, kept the order active, and sent the 'duplicate-refund' template. Customer: Got it, thanks. [Refund posted 6 days later; ticket closed satisfied.]",
+            "relevant": true,
+            "why": "A real, completed resolution of this exact problem: verified duplicate capture, refunded the later one, order left intact. This is the playbook in action."
+          },
+          {
+            "source": "KB-114 — Duplicate charge runbook",
+            "text": "If a customer reports a double charge: (1) verify both captures share one order ID in the payment console; (2) refund the LATER capture only; (3) never cancel the order itself — that voids fulfillment; (4) send template 'duplicate-refund' with the 5-10 business-day disclaimer.",
+            "relevant": true,
+            "why": "The canonical procedure — including the step the ticket alone never states: refund the later capture and never cancel the order."
+          },
+          {
+            "source": "Ticket #7702 — resolved (billing)",
+            "text": "Customer: My card shows two charges for one purchase! Agent: The first is a temporary authorization hold and the second is the actual capture. The hold drops off automatically within 3-5 days — no refund is needed.",
+            "relevant": false,
+            "why": "Almost the same words as the query — 'two charges, one purchase' — but a different problem (an auth hold, not a double capture) with the opposite resolution. Near-duplicates with different ground truth are retrieval's hardest trap."
+          },
+          {
+            "source": "Ticket #4821 — resolved (shipping)",
+            "text": "Customer: Order #4821 arrived with the box crushed and one mug shattered. Agent: So sorry — a replacement was dispatched today at no charge; please keep the damaged items.",
+            "relevant": false,
+            "why": "An exact order-number match on the wrong topic. The customer's number pulls their shipping history, not the billing answer you need."
+          },
+          {
+            "source": "Promotions changelog — March",
+            "text": "Loyalty update: members now earn double points on every charge made with a linked card. Double-point events stack with seasonal promotions.",
+            "relevant": false,
+            "why": "'Double' plus 'charge' — a pure lexical collision. Semantically unrelated, yet a keyword-based retriever scores it highly."
+          },
+          {
+            "source": "KB-203 — Returns and refunds policy",
+            "text": "Unused items may be returned within 30 days of delivery for a refund of the purchase price. Refunds are issued to the original payment method after inspection at the warehouse.",
+            "relevant": false,
+            "why": "The word 'refund' makes it feel adjacent, but the returns policy governs sending goods back — not correcting a billing error."
+          }
+        ],
+        "teaches": "Support logs are dense with near-duplicates: the same words describing different problems. Ticket #7702 matched the query almost verbatim and would have taught the wrong fix — 'wait, it drops off' instead of 'refund the second capture'. This is why production systems rerank with a model that reads query and candidate together, and why 'looks similar' must be checked against 'resolved the same problem' — with resolution metadata, not prose similarity alone."
+      },
+      {
+        "id": "rel-apidocs",
+        "domain": "API-docs code question",
+        "query": "Using the Emberfall API, how do I refresh an expired access token without forcing the user to log in again?",
+        "corpus": "Searching: Emberfall developer docs — 96 pages, plus changelog and forum.",
+        "chunks": [
+          {
+            "source": "Docs — Authentication › Refreshing tokens",
+            "text": "POST /oauth/token with grant_type=refresh_token and your stored refresh_token. The response contains a new access_token (expires_in: 3600) and a rotated refresh_token. Persist the new refresh token immediately — the old one is invalidated on use.",
+            "relevant": true,
+            "why": "The exact procedure: endpoint, grant type, and the rotation detail that quietly breaks naive implementations."
+          },
+          {
+            "source": "Docs — Errors › Handling 401 TOKEN_EXPIRED",
+            "text": "When a call returns 401 with code TOKEN_EXPIRED, refresh the access token and retry the request once. If the refresh call itself returns invalid_grant, the refresh token has expired or was already rotated — only then should you send the user back to login.",
+            "relevant": true,
+            "why": "This completes the answer: when to trigger a refresh, and the one case where re-login is genuinely unavoidable."
+          },
+          {
+            "source": "Docs — Authentication › Logging in",
+            "text": "POST /oauth/token with grant_type=password plus the user's email and password. The response contains an access_token and a refresh_token. Store both securely; never embed credentials in client code.",
+            "relevant": false,
+            "why": "Same endpoint, same token vocabulary, nearly identical embedding — but it is the password flow: the exact thing the question is trying to avoid."
+          },
+          {
+            "source": "Docs — Webhooks › Verifying signatures",
+            "text": "Every webhook delivery includes an X-Ember-Signature header: an HMAC-SHA256 of the payload using your signing token. Reject deliveries whose signature does not match. Signing tokens can be rotated in the dashboard.",
+            "relevant": false,
+            "why": "'Token' and 'rotate' again — but a webhook signing token, not an OAuth access token. Same words, different subsystem."
+          },
+          {
+            "source": "Changelog — v2.3",
+            "text": "Security hardening: access-token lifetime reduced from 24 hours to 1 hour. Long-lived integrations should migrate to the refresh-token flow before the v2 endpoints sunset.",
+            "relevant": false,
+            "why": "Genuinely related context — it explains WHY tokens now expire — but it contains no procedure. Relevant-adjacent is not answer-bearing."
+          },
+          {
+            "source": "Docs — Rate limits",
+            "text": "Exceeding 120 requests per minute returns 429 Too Many Requests with a Retry-After header. Do not confuse 429 with 401: back off on 429, re-authenticate on 401.",
+            "relevant": false,
+            "why": "It mentions 401 and re-authenticating, so it rides the query's error vocabulary — but rate limiting is not token refresh."
+          }
+        ],
+        "teaches": "Docs questions punish shallow similarity hardest: the login page shares an endpoint and every keyword with the refresh page, yet implements the flow you are trying to avoid. And notice the changelog — truly related, still useless, because it explains without instructing. Good RAG over docs must rank answer-bearing passages above merely on-topic ones; that is precisely what cross-encoder rerankers and 'does this passage contain the procedure?' eval questions exist for."
+      }
+    ],
+    "chunking": [
+      {
+        "id": "cut-legal",
+        "domain": "Legal contract",
+        "scroll": "A 40-page commercial lease: numbered clauses (§1-§38) with nested sub-clauses, defined terms gathered in §2, cross-references everywhere ('subject to §9.2'), and two scanned exhibit pages.",
+        "strategies": [
+          {
+            "name": "Small fixed shards — ~150 tokens, a few sentences each",
+            "tradeoff": "Razor-focused shards make matches precise and cheap to prompt — but clauses are split mid-thought. A rule lands in one shard while its exception lands in the next, and defined terms drift away from the clauses that use them.",
+            "recall": 40,
+            "precision": 84,
+            "best": false,
+            "verdict": "Fragmentation kills it here: fixed boundaries ignore the clause skeleton, so §9.1 splits mid-clause — the rule in one shard, its consent conditions stranded in the next. Precise — but precisely incomplete."
+          },
+          {
+            "name": "Large fixed shards — ~2,000 tokens, roughly three pages each",
+            "tradeoff": "Whatever is retrieved arrives with generous context — but each shard blends a dozen unrelated provisions into one embedding, so retrieval goes blurry, and every answer drags three pages of lease into the prompt at full token cost.",
+            "recall": 68,
+            "precision": 35,
+            "best": false,
+            "verdict": "When it hits, everything needed is aboard — but the diluted embeddings miss more often, and the generator must dig one clause out of three pages of boilerplate."
+          },
+          {
+            "name": "Structural cut — one shard per clause, sub-clauses attached",
+            "tradeoff": "Follows the skeleton the lawyers already built: each clause stays whole with its sub-points, and headings become metadata. Costs a real parser for the numbering scheme, degrades on scanned exhibit pages a text parser cannot read — and cross-references ('subject to §9.2') still reach outside any single shard.",
+            "recall": 86,
+            "precision": 80,
+            "best": true,
+            "verdict": "Contracts arrive pre-chunked by their authors — clause boundaries ARE semantic boundaries. You pay the parsing cost once, and retrieval inherits the document's own logic."
+          }
+        ],
+        "teaches": "Chunking is deciding what a 'unit of meaning' is for THIS corpus. Cut too small and you shear rules from their exceptions; too big and you smear many meanings into one blurry vector while paying tokens for boilerplate. Structured documents usually deserve structural cuts — and the honest engineering move is to eval chunkers against a question set drawn from your own corpus, not to trust anyone's default 512."
+      },
+      {
+        "id": "cut-chatlog",
+        "domain": "Support chat archive",
+        "scroll": "One year of support chats: 11,300 tickets, each a threaded back-and-forth of short messages — 'it', 'that order', 'the second one' — where the complaint and its fix are often separated by three clarifying replies.",
+        "strategies": [
+          {
+            "name": "Per message — every chat message becomes its own shard",
+            "tradeoff": "Individual messages embed cleanly and score precisely — but chat meaning lives across turns. 'Refunded the second one' is a perfect answer welded to a question that lives in a different shard.",
+            "recall": 30,
+            "precision": 62,
+            "best": false,
+            "verdict": "Pronouns doom it: retrieval returns 'refunded the second one' with no order, no problem, no context. High-scoring shards, unusable answers."
+          },
+          {
+            "name": "Fixed windows — 2,000-token slices straight across the log",
+            "tradeoff": "Windows keep neighboring turns together with zero parsing effort — but the log is a stream of interleaved tickets, so windows routinely straddle two customers' conversations, blending unrelated problems (and identities) into one shard.",
+            "recall": 55,
+            "precision": 34,
+            "best": false,
+            "verdict": "Straddled boundaries are poison in a log: a shard that ends one customer's refund and begins another's password reset embeds as neither — and can leak one case into another's answer."
+          },
+          {
+            "name": "Per ticket — one shard from complaint through resolution",
+            "tradeoff": "The ticket is the natural unit: problem, diagnosis, and fix stay welded together, and ticket metadata (product, status, resolution) comes along free. Very long tickets can overflow a shard and need a size cap or a summary pass.",
+            "recall": 88,
+            "precision": 74,
+            "best": true,
+            "verdict": "A support answer is a story — complaint to fix. The ticket boundary keeps the story whole, which is exactly what the next agent needs retrieved."
+          }
+        ],
+        "teaches": "For conversational data the semantic unit is the exchange, not the sentence. Message-level shards are precise fragments of nothing; fixed windows bleed strangers' conversations together. Chunk-by-ticket wins here for the same reason chunk-by-clause wins a lease: real corpora carry their own boundaries, and the best chunker is usually the one that respects them."
+      },
+      {
+        "id": "cut-apidocs",
+        "domain": "API documentation",
+        "scroll": "Developer docs for a payments API: pages organized by feature, each a few prose sections followed by the code example that demonstrates them, plus parameter tables and an error-code appendix.",
+        "strategies": [
+          {
+            "name": "Per paragraph — prose and code blocks shard separately",
+            "tradeoff": "Small, clean shards — but the cut falls exactly on the seam that matters: an explanation shards apart from the code that demonstrates it, and a parameter table shards apart from the endpoint it describes.",
+            "recall": 44,
+            "precision": 84,
+            "best": false,
+            "verdict": "The seeker asks 'how do I refresh a token' and retrieval returns the sentence about refreshing — without the request example that shows how. Half-answers, reliably."
+          },
+          {
+            "name": "Whole page — one shard per documentation page",
+            "tradeoff": "Everything about a feature travels together with no parsing needed — but a page covers many questions at once, so its single embedding is an average that matches none of them sharply, and every hit ships a whole page of tokens into the prompt.",
+            "recall": 66,
+            "precision": 38,
+            "best": false,
+            "verdict": "Ask about token refresh and you may retrieve the entire Authentication page — the answer is aboard, buried under every other auth topic, at full-page token price."
+          },
+          {
+            "name": "Per section — heading-bounded, code kept with its prose",
+            "tradeoff": "Split on headings so each shard is one topic with its example and parameters attached, and the heading path ('Authentication › Refreshing tokens') becomes metadata. Requires parsing the docs' structure, plus care for tables orphaned between sections.",
+            "recall": 87,
+            "precision": 81,
+            "best": true,
+            "verdict": "Docs are written in sections because a section answers one question — exactly the shape retrieval wants. Keeping code welded to its prose is the difference between explaining and enabling."
+          }
+        ],
+        "teaches": "Technical docs have a golden rule: never divorce code from the prose that explains it — a how-to answer without its example fails the developer who asked. Section-level chunks with heading-path metadata give retrieval one-topic shards AND give the generator citable structure. The pattern generalizes: find the author's unit of meaning and make it your unit of retrieval."
+      }
+    ],
+    "pipeline": {
+      "stages": [
+        {
+          "id": "chunk",
+          "name": "Chunk",
+          "desc": "Cut the corpus into retrievable passages",
+          "phase": "build"
+        },
+        {
+          "id": "embed",
+          "name": "Embed",
+          "desc": "Encode each passage as a meaning-vector",
+          "phase": "build"
+        },
+        {
+          "id": "index",
+          "name": "Index",
+          "desc": "Store the vectors for fast nearest-neighbor search",
+          "phase": "build"
+        },
+        {
+          "id": "retrieve",
+          "name": "Retrieve",
+          "desc": "Embed the query; pull the top-k nearest passages",
+          "phase": "query"
+        },
+        {
+          "id": "rerank",
+          "name": "Rerank",
+          "desc": "Re-score the shortlist reading query and passage together",
+          "phase": "query"
+        },
+        {
+          "id": "generate",
+          "name": "Generate",
+          "desc": "The LLM writes the answer grounded in what survived",
+          "phase": "query"
+        }
+      ],
+      "variants": [
+        {
+          "id": "pipe-lease",
+          "scenario": "A merchant-lord slams the counter: 'Does my lease let me keep a wolfhound?' Rebuild the scroll-magic that turns a 40-page lease into his answer.",
+          "walkthrough": {
+            "chunk": "The lease is cut along its clause headings — §9.1 Animals becomes one whole shard, Schedule 4 another.",
+            "embed": "Each clause-shard becomes a vector; 'Animals — consent, deposit, breed limits' now lives near dog-questions in meaning-space.",
+            "index": "The clause-vectors are shelved in a vector index, so finding neighbors takes milliseconds instead of rereading forty pages.",
+            "retrieve": "His question is embedded with the same model, and the index returns the nearest shards — §9.1 among them, the barking-noise clause riding in on the word 'dog'.",
+            "rerank": "A cross-encoder reads his question against each candidate in full and demotes the noise clause: about dogs, yes; about permission, no.",
+            "generate": "The model drafts the answer from the surviving clauses only, citing §9.1 and Schedule 4 — grounded in the lease, not in training-data folklore."
+          },
+          "teaches": "The order is the architecture. Chunk, embed, and index run once, offline, when the library is built; retrieve, rerank, and generate run on every question, inside the latency budget. The query itself is also embedded at ask-time — with the same model, because a mismatch there silently breaks retrieval. And rerank sits where it does because cross-encoders are too slow to read the whole library but sharp enough to re-judge a shortlist. Break the order and each stage starves the next."
+        },
+        {
+          "id": "pipe-support",
+          "scenario": "A night-shift healer whispers: 'This customer was charged twice — how did we cure this before?' Rebuild the magic that answers from a year of support scrolls.",
+          "walkthrough": {
+            "chunk": "The year of chats is cut one shard per ticket, so each complaint stays welded to its fix.",
+            "embed": "Every ticket-shard becomes a vector; 'duplicate capture, refunded the later one' clusters near double-charge complaints.",
+            "index": "Eleven thousand ticket-vectors are shelved in the index, so each question searches in milliseconds instead of rereading a year of chats.",
+            "retrieve": "The healer's question is embedded and the index returns the closest tickets — the true duplicate-capture fix, with the auth-hold look-alike right beside it.",
+            "rerank": "The cross-encoder reads each ticket against the question and drops the auth-hold case: same words, different illness.",
+            "generate": "The model writes the cure from the surviving tickets and the runbook — refund the later capture, never cancel the order."
+          },
+          "teaches": "Same skeleton, new corpus — that is the point of the pipeline. Chunk, embed, and index are the offline build; retrieve, rerank, and generate are the per-query path. Notice where quality was actually won: chunking by ticket (build-time) made the fix retrievable at all, and reranking (query-time) rejected the near-duplicate. When RAG answers go wrong in production, the fault is usually chunking or retrieval, not the generator — debug the pipeline in its own order."
+        },
+        {
+          "id": "pipe-apidocs",
+          "scenario": "An apprentice artificer pleads: 'The seeker's token has expired — how do they refresh it without logging in again?' Rebuild the magic that answers from the Emberfall docs.",
+          "walkthrough": {
+            "chunk": "The docs are cut into heading-bounded sections, each code example kept welded to its prose.",
+            "embed": "Each section becomes a vector; 'Refreshing tokens — grant_type, rotation' sits near expiry questions in meaning-space.",
+            "index": "The section-vectors are shelved in the index with their heading paths attached as metadata.",
+            "retrieve": "The question is embedded and the nearest sections return — the refresh guide, and the password-login page riding in on shared keywords.",
+            "rerank": "The cross-encoder reads the full question against each section and demotes login: same endpoint, opposite intent.",
+            "generate": "The model assembles the answer from the surviving sections, quoting the refresh call and the 401-retry rule — with the docs as citations."
+          },
+          "teaches": "Every stage earns its place by covering another stage's weakness. Chunking gives retrieval units worth finding; embedding and indexing make finding fast; retrieval casts a wide, cheap net; reranking reads closely what retrieval only skimmed. Generation is deliberately last and grounded, because an LLM without retrieved context answers from memory — fluently, confidently, and unverifiably. Build-time stages run once; query-time stages pay latency on every single question."
+        }
+      ]
+    }
+  }
+}

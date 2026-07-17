@@ -32,6 +32,17 @@
       "bank": "pf-l1",
       "summary": "Face the Keeper: twelve questions on lists, dicts, sets, tuples and the traps between them.",
       "requires": ["pf-l1-q1", "pf-l1-q2"]
+    },
+    {
+      "id": "the-dragon",
+      "region": "dragons-keep",
+      "lesson": "The Final Trial",
+      "type": "boss",
+      "title": "The Dragon",
+      "xp": 500,
+      "bank": null,
+      "summary": "The interview itself, wearing scales.",
+      "requires": []
     }
   ]
 }

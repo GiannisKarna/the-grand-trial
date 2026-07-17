@@ -57,9 +57,11 @@
 
     Game.State.data = state;
     Game.State.quests = (questsDoc && questsDoc.quests) || [];
+    if (!Game.State.data.trials) Game.State.data.trials = {}; // pre-Phase-2 saves
 
     const canvas = document.getElementById('world-canvas');
     if (!Game.World.canvas) Game.World.init(canvas);
+    if (Game.SFX) Game.SFX.init(); // arm the first-gesture audio unlock
     Game.HUD.init();
     Game.Region.init();
     Game.HUD.render();

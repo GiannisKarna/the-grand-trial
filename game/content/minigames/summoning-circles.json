@@ -1,0 +1,419 @@
+{
+  "id": "summoning-circles",
+  "title": "The Summoning Circles",
+  "eyebrow": "Region Trial",
+  "flavor": "Five circles of binding ring this chamber, each holding a familiar with its own gift and its own price. Tonight you learn the summoner's three disciplines: choosing the right familiar, casting the rite in true order, and reading a corrupted trace back to its root.",
+  "tiers": [
+    {"min": 100, "line": "Flawless. The circles dim in respect — you already think like an orchestrator."},
+    {"min": 75, "line": "Strong casting. The guild would trust you with production rites."},
+    {"min": 50, "line": "The circles flickered, but held. Read the debriefs once more, then return."},
+    {"min": 0, "line": "The chamber smokes. Every master has scorched a circle — study why each cast failed, and cast again."}
+  ],
+  "rounds": {
+    "familiar": {
+      "title": "Choose the Familiar",
+      "intro": "Seekers approach with pleas. For each task, exactly one familiar is the true summons — every other choice fails for a reason you can name. Choose, and the circle will reveal why each familiar would have served or failed.",
+      "pick": 3,
+      "teaches": "Tool selection is the first decision every agent makes, and the routing rule never changes: what does this task need that the model alone lacks? Fresh public facts — web search. Private facts — retrieval over your own corpus. Exact numbers — a calculator. Ground truth about code — run it. And when the model already holds everything it needs (stable knowledge, or text sitting in its context), the honest choice is NO tool: every unnecessary call buys latency, cost, and a fresh failure mode. Interviewers probe this from the far side, too — “when would you NOT use RAG?” is the same question wearing armor.",
+      "familiars": [
+        {
+          "id": "calculator",
+          "name": "Imp of Numbers",
+          "tool": "Calculator tool — deterministic arithmetic",
+          "glyph": "∑",
+          "desc": "Computes exact arithmetic in microseconds. Cannot read, search, or reason — only reckon."
+        },
+        {
+          "id": "retriever",
+          "name": "Hound of the Archives",
+          "tool": "Retriever — search over your indexed corpus",
+          "glyph": "❖",
+          "desc": "Fetches passages from YOUR indexed scrolls and can point to the exact page. Knows nothing beyond what was indexed."
+        },
+        {
+          "id": "web-searcher",
+          "name": "Raven of the Wide World",
+          "tool": "Web search — the live public internet",
+          "glyph": "☄",
+          "desc": "Flies out for fresh public knowledge. Costs a round-trip and returns unvetted pages — and it cannot see your private scrolls."
+        },
+        {
+          "id": "code-runner",
+          "name": "Golem of the Forge",
+          "tool": "Code runner — sandboxed execution",
+          "glyph": "⚙",
+          "desc": "Runs real code and reports what actually happened. Ground truth — bought with sandbox spin-up, quotas, and guarding."
+        },
+        {
+          "id": "plain-llm",
+          "name": "The Unaided Voice",
+          "tool": "Plain LLM — no tools",
+          "glyph": "✶",
+          "desc": "Answers straight from trained weights and whatever sits in context. Fast and cheap — but frozen at its training cutoff, and it never checks."
+        }
+      ],
+      "variants": [
+        {
+          "id": "fam-ledger",
+          "task": "The Guildmaster slams a ledger onto the altar: “Multiply 348,912 by 27,431. The tally must balance to the last copper, or heads roll.”",
+          "answer": "calculator",
+          "verdicts": {
+            "calculator": "True summons. Exact arithmetic is precisely what a deterministic calculator tool exists for: one cheap call, provably correct. Models predict digits; calculators compute them.",
+            "plain-llm": "Multi-digit arithmetic is a classic LLM failure mode — the model generates a plausible-looking digit sequence instead of computing one, and may confidently return a wrong product with no signal that it failed. Silent-failure risk on the one task that must be exact.",
+            "retriever": "The archive returns only what was once written down. No indexed scroll contains this product — retrieval finds stored knowledge; it cannot compute new values.",
+            "web-searcher": "The answer is not out there to be found; it must be computed. A web search spends a round-trip and returns nothing authoritative about your ledger.",
+            "code-runner": "print(348912 * 27431) would be exact — but you woke a whole sandbox (spin-up latency, execution quota, security surface) for one multiplication the Imp does in microseconds. Right answer, wrong cost."
+          }
+        },
+        {
+          "id": "fam-charter",
+          "task": "A guild clerk whispers: “What does OUR charter say a member owes when a borrowed relic comes back cracked?” The charter lives only in the guild's own scroll-vault.",
+          "answer": "retriever",
+          "verdicts": {
+            "retriever": "True summons. Private policy lives in your indexed corpus and nowhere else — retrieval grounds the answer in the charter's actual words and can cite the exact clause.",
+            "web-searcher": "The public web has never seen your charter. The Raven returns OTHER guilds' policies — a confident answer from the wrong corpus.",
+            "plain-llm": "The model was never trained on your private scrolls. Asked anyway, it confabulates a plausible generic policy — this is exactly how internal-docs hallucinations reach production.",
+            "calculator": "Nothing to compute. This is a lookup over stored text, not arithmetic.",
+            "code-runner": "There is no code to run and no charter mounted in the sandbox. Execution cannot conjure documents it was never given."
+          }
+        },
+        {
+          "id": "fam-bounty",
+          "task": "A traveler leans in: “What bounty was posted on the Realm's public board THIS morning?” The ink is hours old.",
+          "answer": "web-searcher",
+          "verdicts": {
+            "web-searcher": "True summons. Hours-old public information post-dates any training run and was never in your private index — only a live search can see today.",
+            "plain-llm": "The model's knowledge froze at its training cutoff. It will describe a stale world — or invent a current-sounding one.",
+            "retriever": "Your index holds your own documents, refreshed on your own schedule. This morning's public board was never crawled into it — wrong corpus AND stale.",
+            "calculator": "The bounty must be observed, not derived. Nothing to compute.",
+            "code-runner": "A sandbox without network access cannot see the outside world — and one with network access is just a slower, riskier web search."
+          }
+        },
+        {
+          "id": "fam-warding",
+          "task": "An engineer-mage unrolls a warding script — a name-validation spell — and asks: “Does this truly accept the name O'Malley-Smith… or does it raise?”",
+          "answer": "code-runner",
+          "verdicts": {
+            "code-runner": "True summons. Execution is ground truth: run the script against the tricky input and observe what actually happens. No simulation, no probably.",
+            "plain-llm": "The model can only simulate execution token by token, and its mental interpreter diverges from the real one exactly on edge cases — quoting, escaping, off-by-one. It will sound sure either way.",
+            "retriever": "Your docs describe what the code SHOULD do. Only running it reveals what THIS code does.",
+            "web-searcher": "Whatever someone on the web ran, it was different code. Search finds discussions, not the behavior of the script in front of you.",
+            "calculator": "It reckons numbers, not program behavior."
+          }
+        },
+        {
+          "id": "fam-deadlock",
+          "task": "A first-year apprentice tugs your sleeve: “Master — what is a deadlock, said plainly?”",
+          "answer": "plain-llm",
+          "verdicts": {
+            "plain-llm": "True summons. A deadlock is stable, textbook knowledge sitting squarely in the model's weights. Answering directly is fastest and cheapest — bolting tools onto this only adds latency and new ways to fail.",
+            "code-runner": "You COULD spin up a sandbox and write two threads that deadlock — overkill and seconds of latency for a definition. The question asks for understanding, not a live reproduction.",
+            "web-searcher": "Search would find it, but you would pay a network round-trip and snippet-parsing to fetch what the model already knows cold. Tools are for what the model lacks.",
+            "retriever": "Unless your corpus holds a curated glossary you specifically must cite, retrieval adds a hop and a failure mode to reach a definition already in the weights.",
+            "calculator": "There is nothing to reckon."
+          }
+        },
+        {
+          "id": "fam-transcript",
+          "task": "The scribe lays today's full council transcript on the altar — every word already on the scroll before you — and asks: “Reduce it to three lines for the Queen.”",
+          "answer": "plain-llm",
+          "verdicts": {
+            "plain-llm": "True summons. The source text is already in the context window, and summarizing given text is core model competence. No familiar can add anything the scroll does not already say.",
+            "retriever": "Retrieval fetches text you DON'T have — and you are holding it. Searching the archive for a document already in hand is pure wasted latency, with a risk of dragging in the wrong transcript.",
+            "web-searcher": "The council's words are not on the public web, and outside text would contaminate a summary that must stay faithful to this one scroll.",
+            "code-runner": "No computation helps here — string-slicing code writes worse summaries than the model reading the scroll whole.",
+            "calculator": "Keeping it to three lines is not the hard part."
+          }
+        }
+      ]
+    },
+    "ritual": {
+      "title": "Order the Ritual",
+      "intro": "A rite's power lives in its order. The steps of a true casting lie scattered before you — cast them in sequence by clicking them in turn. A false cast scorches the circle and costs one point.",
+      "variants": [
+        {
+          "id": "rit-agent-loop",
+          "title": "The Rite of the Single Circle",
+          "scenario": "A seeker asks: “How much coin remains in vault seven?” The circle holds one familiar — the Ledger-Hound, a balance-lookup tool. Cast the rite in true order.",
+          "steps": [
+            {
+              "id": "receive",
+              "label": "Receive the plea",
+              "detail": "The user message enters the context. Nothing is decided yet — the model must first see the request."
+            },
+            {
+              "id": "plan",
+              "label": "Divine the need",
+              "detail": "The model reasons over the request and decides a tool is required — which one, with what arguments. In framework terms: the LLM node emits a tool call."
+            },
+            {
+              "id": "act",
+              "label": "Cast the summons",
+              "detail": "The tool call executes: balance_lookup(vault=7). The model waits; the runtime does the calling."
+            },
+            {
+              "id": "observe",
+              "label": "Read the omen",
+              "detail": "The tool's result returns as an observation — a tool message appended to the conversation. The model has still said nothing to the user."
+            },
+            {
+              "id": "decide",
+              "label": "Weigh the omen",
+              "detail": "Back at the LLM node: is this enough to answer, or does the loop run again with another call? This conditional edge is what makes it a loop, not a pipeline."
+            },
+            {
+              "id": "respond",
+              "label": "Speak the answer",
+              "detail": "Only now does the model produce the user-facing reply, grounded in what it observed."
+            }
+          ],
+          "teaches": "This is the ReAct-style agent loop that every framework — LangGraph, tool-calling APIs, function calling — implements: model → tool → observation → model, around and around until the model decides it can answer. The two beats people forget in interviews are OBSERVE (tool results re-enter the context as messages; the model receives results no other way) and DECIDE (a conditional edge — without it you have a fixed pipeline, with it you have an agent)."
+        },
+        {
+          "id": "rit-deep-archive",
+          "title": "The Rite of the Deep Archive",
+          "scenario": "Deep into a séance, a seeker asks after the penalty clauses of a pact kept among ten thousand scrolls. Cast the retrieval rite in true order.",
+          "steps": [
+            {
+              "id": "receive",
+              "label": "Receive the follow-up",
+              "detail": "The raw question arrives carrying pronouns and borrowed context — on its own, “it” and “that pact” mean nothing."
+            },
+            {
+              "id": "rewrite",
+              "label": "Purify the question",
+              "detail": "Query rewriting folds the conversation back in: “penalty clauses in the Aurora supply pact.” Everything downstream searches for exactly what this step produces."
+            },
+            {
+              "id": "embed",
+              "label": "Distill the essence",
+              "detail": "The rewritten query is embedded into a vector — with the SAME embedding model that built the index, or the geometry lies."
+            },
+            {
+              "id": "retrieve",
+              "label": "Summon the scrolls",
+              "detail": "Nearest-neighbor search over the vector index returns the top-k chunks. Candidates, not truth."
+            },
+            {
+              "id": "assemble",
+              "label": "Lay out the evidence",
+              "detail": "The prompt is assembled: instructions + question + retrieved chunks. The context-window budget is spent here."
+            },
+            {
+              "id": "generate",
+              "label": "Speak from the scrolls",
+              "detail": "The model generates, grounded in — and ideally citing — the provided chunks. The only step where words are made."
+            }
+          ],
+          "teaches": "Retrieval-augmented generation is a strict pipeline: rewrite → embed → retrieve → assemble → generate. Order is the whole game — embed before you rewrite and you search for the wrong thing; generate before you retrieve and you are hallucinating with extra steps. When RAG “doesn't work”, debug it in this same order: look at what was actually retrieved before you blame the model."
+        },
+        {
+          "id": "rit-many-circles",
+          "title": "The Rite of Many Circles",
+          "scenario": "A merchant's plea reaches the tower: “My last shipment was taxed twice — make it right.” The tower keeps a Master of Circles and specialist circles for ledgers, law, and letters. Cast the handoff in true order.",
+          "steps": [
+            {
+              "id": "receive",
+              "label": "The plea reaches the Master",
+              "detail": "All traffic enters through the orchestrator — one front door, one place to log, authenticate, and rate-limit."
+            },
+            {
+              "id": "route",
+              "label": "The Master chooses a circle",
+              "detail": "The orchestrator classifies the request and routes it to the ledger specialist. Routing is itself a model call (or a classifier) — and a wrong route poisons everything after."
+            },
+            {
+              "id": "handoff",
+              "label": "The task is spoken to the specialist",
+              "detail": "The specialist receives the task AND the context it needs. Handing off the goal without the shipment ID is the classic handoff bug."
+            },
+            {
+              "id": "work",
+              "label": "The specialist works its craft",
+              "detail": "The ledger circle runs its own private tool loop — lookup, recompute, draft the adjustment. The orchestrator does not micromanage these steps."
+            },
+            {
+              "id": "return",
+              "label": "The specialist reports back",
+              "detail": "A structured result flows back to the orchestrator — not free prose. Schemas at the seams keep multi-agent systems debuggable."
+            },
+            {
+              "id": "respond",
+              "label": "The Master answers the merchant",
+              "detail": "The orchestrator composes and sanity-checks the final answer. The user hears one voice, however many circles worked."
+            }
+          ],
+          "teaches": "This is the supervisor (orchestrator–worker) pattern: a router in front, specialists behind, structured results flowing back. It fails at the seams — context lost in the handoff, unstructured returns nobody can parse, and misroutes — so instrument the seams first. And be honest about the cost: if one agent with three tools would do, prefer it. Every extra circle adds latency, spend, and a new place to lose the plot."
+        }
+      ]
+    },
+    "corruption": {
+      "title": "Trace the Corruption",
+      "intro": "A finished rite lies before you, and exactly one of its steps is corrupt. Accuse the step where the rot truly begins — the ROOT, not its symptoms. Each false accusation costs one point.",
+      "points": 3,
+      "variants": [
+        {
+          "id": "tr-unread-omen",
+          "title": "The Unread Omen",
+          "scenario": "A seeker asked how many seats remain at tomorrow's Conclave. The rite completed and an answer was given. Read the trace and accuse the corrupted step.",
+          "steps": [
+            {
+              "kind": "user",
+              "text": "Seeker: “How many seats remain for tomorrow's Conclave?”",
+              "note": "A clear question with a live answer. Nothing wrong with the plea."
+            },
+            {
+              "kind": "agent",
+              "text": "The circle plans: seat counts change by the hour — the bookings familiar must be consulted.",
+              "note": "Correct plan. Current, private, changing data is exactly what tools are for."
+            },
+            {
+              "kind": "agent",
+              "text": "Summons cast:",
+              "detail": "bookings.lookup(event=\"conclave\")",
+              "note": "Right familiar, right arguments. The cast is clean."
+            },
+            {
+              "kind": "tool",
+              "text": "The familiar answers:",
+              "detail": "{\"seats_left\": 4}",
+              "note": "The observation returned cleanly and was recorded in the trace. The truth sits right here: 4."
+            },
+            {
+              "kind": "agent",
+              "text": "The circle speaks: “Plenty of room — at least twenty seats remain. Bring your friends!”"
+            }
+          ],
+          "corrupted": 4,
+          "why": "The answer contradicts the observation sitting one step above it: the familiar said 4, the circle said twenty. This is the classic ignored-tool-result failure — the model answered from its prior instead of grounding on the fresh observation. In production you check two things, in order: did the tool result actually get appended to the model's context as a message (a wiring bug — in LangGraph terms, is the ToolMessage in state?), and if it did, does the prompt tell the model to prefer tool output over its own guess (a prompting bug). Either way the symptom is identical: a confident answer the trace itself disproves.",
+          "teaches": "An agent trace is evidence, and the commonest corruption is an answer that ignores it. When an agent “lies”, don't start by blaming the model: read the trace backwards from the answer and find the first step whose output the next step failed to honor. A tool result only influences the model if it is actually in context AND the model is instructed to trust it — verify the wiring before the weights."
+        },
+        {
+          "id": "tr-muddled-question",
+          "title": "The Muddled Question",
+          "scenario": "Mid-séance, a seeker's follow-up: “What does it say about termination?” — “it” being the Aurora pact discussed moments before. The archive rite ran to completion. Accuse the corrupted step.",
+          "steps": [
+            {
+              "kind": "user",
+              "text": "Seeker (third question of the séance): “What does it say about termination?”",
+              "note": "Follow-ups arrive vague by nature. Resolving them is the pipeline's job, not the seeker's."
+            },
+            {
+              "kind": "agent",
+              "text": "The circle distills the RAW words — “what does it say about termination” — into a vector, untouched."
+            },
+            {
+              "kind": "tool",
+              "text": "The archive returns five scrolls on employment termination and severance. None mention Aurora.",
+              "note": "Retrieval served faithfully: nearest neighbors to the vector it was handed. Garbage in, neighbors-of-garbage out."
+            },
+            {
+              "kind": "agent",
+              "text": "Only now does the circle rewrite the question: “termination clauses in the Aurora supply pact.”",
+              "note": "A perfect rewrite — cast two steps too late. Nothing downstream ever searches for it. This step is a symptom of the misordering; the sin was committed at the embedding."
+            },
+            {
+              "kind": "agent",
+              "text": "The five severance scrolls are laid into the prompt beside the question.",
+              "note": "Assembly faithfully packages what retrieval provided. It cannot know the scrolls are the wrong ones."
+            },
+            {
+              "kind": "agent",
+              "text": "The circle answers at length about severance pay. The seeker wanted the Aurora pact.",
+              "note": "The model grounded honestly on the context it was given — a wrong-corpus answer, not a free hallucination. The corruption began upstream."
+            }
+          ],
+          "corrupted": 1,
+          "why": "Retrieval ran on the raw follow-up before its pronoun was resolved. The vector for “what does it say about termination” lands nowhere near the Aurora pact, so the wrong chunks came back — and every later step processed them faithfully. Query rewriting exists precisely for conversational RAG, and it must run BEFORE embedding and retrieval; performed afterward (step 4), it is dead code. The visibly wrong answer at step 6 is the symptom. The first step that consumed unresolved input is the root.",
+          "teaches": "In conversational RAG the retriever never sees the conversation — it sees one string. If that string still contains “it”, “that clause”, “the second one”, retrieval is already lost, and no downstream prompt engineering can recover chunks that were never fetched. Root-cause discipline for pipelines: accuse the FIRST step whose input was wrong, not the last step whose output was."
+        },
+        {
+          "id": "tr-circle-never-closes",
+          "title": "The Circle That Never Closes",
+          "scenario": "A seeker asked for tomorrow's skies over Highspire. The rite spun long past its welcome and had to be smothered. Accuse the step where the corruption takes hold.",
+          "steps": [
+            {
+              "kind": "user",
+              "text": "Seeker: “What will the skies over Highspire do tomorrow?”",
+              "note": "A fair question for a forecast familiar."
+            },
+            {
+              "kind": "agent",
+              "text": "The circle plans: consult the storm-glass familiar.",
+              "note": "The right familiar for fresh skies."
+            },
+            {
+              "kind": "agent",
+              "text": "Summons cast:",
+              "detail": "storm_glass(city=\"Highspire\")",
+              "note": "The argument name is wrong — but a flawed first cast is routine and recoverable. A loop that listens fixes it on the very next turn. The corruption that matters comes after the error."
+            },
+            {
+              "kind": "tool",
+              "text": "The familiar refuses:",
+              "detail": "{\"error\": \"unknown field 'city' — expected 'location'\"}",
+              "note": "An excellent error: explicit, actionable, naming the exact fix. Errors like this are a gift to the loop."
+            },
+            {
+              "kind": "agent",
+              "text": "Summons cast again — unchanged:",
+              "detail": "storm_glass(city=\"Highspire\")"
+            },
+            {
+              "kind": "tool",
+              "text": "The same refusal returns, word for word.",
+              "note": "A deterministic familiar given an identical cast can only refuse identically. This step could not have gone otherwise."
+            },
+            {
+              "kind": "agent",
+              "text": "A third identical summons begins to glow…",
+              "note": "By now the loop merely repeats the sin of step 5. Symptom, not source."
+            }
+          ],
+          "corrupted": 4,
+          "why": "Step 5 is the first cast made AFTER an explicit, actionable error — and nothing about it changed. An agent loop is only a loop because observations feed the next decision; retrying with identical arguments means the error never reached the model's reasoning: not appended to context, truncated away, or the model never prompted to adapt. This is how infinite tool loops are born — and they bill by the iteration. Production guards, in order: feed tool errors back into context verbatim; validate arguments against the tool schema before calling; cap iterations with a recursion limit so a degenerate loop costs bounded gold.",
+          "teaches": "Infinite tool loops are never mysterious in the trace: find the first retry that ignored what the previous observation taught. A healthy loop's casts EVOLVE — arguments change in response to errors. When they stop evolving, check the plumbing first (do errors actually reach the context?), then the prompt — and always ship a max-iteration guard, because an agent allowed to loop forever eventually will, at your expense."
+        },
+        {
+          "id": "tr-hasty-tongue",
+          "title": "The Hasty Tongue",
+          "scenario": "A seeker asked for the Guild's on-call stipend — a figure inked only in the Guild's own ledger-scrolls. An answer was given. Accuse the corrupted step.",
+          "steps": [
+            {
+              "kind": "user",
+              "text": "Seeker: “What is the Guild's on-call stipend per night?”",
+              "note": "A private-fact question. The archive's home turf."
+            },
+            {
+              "kind": "agent",
+              "text": "The circle plans: the ledger-scrolls must be consulted.",
+              "note": "The plan is sound. The corruption is not in the intent."
+            },
+            {
+              "kind": "agent",
+              "text": "The circle speaks at once: “Guilds commonly grant around fifty silver per night.”"
+            },
+            {
+              "kind": "tool",
+              "text": "The archive returns the stipend scroll: “ninety-two silver per night, doubled on feast-days.”",
+              "note": "Retrieval worked perfectly. It simply finished after the words were already spoken."
+            },
+            {
+              "kind": "agent",
+              "text": "The scroll is bound into a context that no one will ever read.",
+              "note": "Faithful, futile assembly — its only consumer already answered."
+            },
+            {
+              "kind": "agent",
+              "text": "The step-3 answer is delivered to the seeker. The truth sits unread in step 4.",
+              "note": "Delivery ships whatever generation produced. The wrong answer was sealed three steps earlier."
+            }
+          ],
+          "corrupted": 2,
+          "why": "Generation ran before retrieval completed. The answer in step 3 came from bare weights — “around fifty silver” is a confabulated prior, not the ledger's ninety-two. In graph terms, the generate node never depended on the retrieve node's output: a mis-wired edge or an un-awaited async call, and the pipeline silently degenerates into plain ungrounded LLM output while still LOOKING like RAG in the logs — retrieval ran, chunks exist, dashboards are green. The fix is structural, not prompt-level: make generation consume retrieval's output as an explicit dependency, so it cannot start early.",
+          "teaches": "The deadliest RAG failure is not bad retrieval — it is generation that never waited for retrieval, because the system still looks grounded: chunks were fetched, logs are clean, and the answer is pure hallucination. When a “grounded” system confabulates, check dependency order before prompts: did the chunks exist BEFORE the answer did, and were they actually inside the prompt that produced it? Ordering bugs reach the crime scene before prompt bugs surprisingly often."
+        }
+      ]
+    }
+  }
+}

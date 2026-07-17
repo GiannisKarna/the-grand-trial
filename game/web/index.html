@@ -6,6 +6,11 @@
   <title>The Grand Trial</title>
   <link rel="stylesheet" href="css/style.css">
   <link rel="stylesheet" href="css/minigames.css">
+  <link rel="stylesheet" href="css/minigames/library_trial.css">
+  <link rel="stylesheet" href="css/minigames/summoning_circles.css">
+  <link rel="stylesheet" href="css/minigames/war_council.css">
+  <link rel="stylesheet" href="css/minigames/forge_tavern.css">
+  <link rel="stylesheet" href="css/minigames/dragon_gauntlet.css">
 </head>
 <body>
   <div id="game-root">
@@ -22,7 +27,9 @@
       </div>
       <div class="hud-right">
         <span id="hud-embers" title="Embers — one per day you complete the daily drill">&#128293; 0</span>
+        <button id="btn-curses" class="btn btn-curse hidden" type="button" title="The Curse Codex — your open wounds">&#9760; 0</button>
         <button id="btn-daily-drill" class="btn btn-gold" type="button">Daily Drill</button>
+        <button id="btn-mute" class="btn-icon" type="button" title="Toggle sound">&#128266;</button>
       </div>
     </header>
     <div id="stage">
@@ -38,12 +45,18 @@
   <div id="toasts"></div>
 
   <script src="js/api.js"></script>
+  <script src="js/sfx.js"></script>
   <script src="js/state.js"></script>
   <script src="js/world.js"></script>
   <script src="js/hud.js"></script>
   <script src="js/region.js"></script>
   <script src="js/minigames/rune_trials.js"></script>
   <script src="js/minigames/quiz_boss.js"></script>
+  <script src="js/minigames/library_trial.js"></script>
+  <script src="js/minigames/summoning_circles.js"></script>
+  <script src="js/minigames/war_council.js"></script>
+  <script src="js/minigames/forge_tavern.js"></script>
+  <script src="js/minigames/dragon_gauntlet.js"></script>
   <script src="js/main.js"></script>
 </body>
 </html>

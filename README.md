@@ -17,6 +17,13 @@ First time here? Walk to **the Rune Plains**, run the daily drill, then open you
 first quest. Quest briefs live in the track folders; you write code in `workspace/`
 dirs; the Game Master (Claude Code in this repo) reviews it and awards XP.
 
+Beyond the Plains (each region unsealed by the Game Master as you progress):
+the **Gatekeeper's Forge** and its async tavern, the **Great Library** with RAG
+scroll-trials and the Summoning Circles, the **War Council**'s Decision-Card
+battles, and at the end of the road — **Veldrath, the Dragon**: a three-phase
+mock-interview gauntlet. Miss questions anywhere and they become Curses (☠ in
+the HUD) that hunt you until cleansed.
+
 ## Setup (fresh clone)
 
 ```

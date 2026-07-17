@@ -1,0 +1,749 @@
+/*
+ * The Grand Trial — The Council of Trade-offs (war_council.js)
+ * Only wc- prefixed classes live here. Shared structure (mg-root, mg-panel,
+ * mg-primary, mg-recap, ...) comes from css/minigames.css.
+ * Dark fantasy: obsidian backdrop, parchment decision cards, antique gold.
+ * All animation is CSS-based; no external assets.
+ */
+
+/* ---------- practice ribbon ---------- */
+
+.wc-practice {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  align-self: flex-start;
+  width: 100%;
+  padding: 6px 0;
+  text-align: center;
+  font-size: 12px;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: #0f0b1c;
+  background: repeating-linear-gradient(
+    -45deg, #d9b45b 0 18px, #b8933e 18px 36px);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.6);
+}
+
+.wc-practice-note {
+  color: #a893c9;
+  font-style: italic;
+  margin: 8px 0 0;
+}
+
+/* ---------- stage & header ---------- */
+
+.wc-root {
+  flex-direction: column;
+}
+
+.wc-stage {
+  width: min(1080px, 96%);
+  margin: 0 auto;
+  padding: 20px 0 40px;
+}
+
+.wc-stage-narrow {
+  width: min(820px, 96%);
+}
+
+.wc-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 0 2px 10px;
+}
+
+.wc-score {
+  font-size: 13px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: #f5d67a;
+}
+
+/* ---------- scenario brief ---------- */
+
+.wc-brief {
+  padding: 18px 20px 16px;
+  margin-bottom: 16px;
+  background: linear-gradient(170deg, #1d1636, #140f26);
+  border: 2px solid #6d5b2e;
+  border-radius: 10px;
+  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.5), inset 0 0 50px rgba(16, 8, 36, 0.5);
+  animation: mg-rise 0.35s ease-out;
+}
+
+.wc-scenario-title {
+  font-size: clamp(24px, 4vw, 32px);
+  letter-spacing: 0.06em;
+  color: #f5d67a;
+  text-shadow: 0 0 14px rgba(217, 180, 91, 0.45);
+}
+
+.wc-scenario-title-small {
+  font-size: 22px;
+  margin-bottom: 10px;
+}
+
+.wc-scenario-real {
+  font-size: 12px;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  color: #a893c9;
+  margin: 2px 0 8px;
+}
+
+.wc-flavor {
+  color: #cbbd9c;
+  font-style: italic;
+  line-height: 1.6;
+  margin: 6px 0 10px;
+}
+
+.wc-load {
+  font-size: 14px;
+  color: #e8dcc0;
+  margin-bottom: 8px;
+}
+
+.wc-load-label {
+  color: #f5d67a;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  font-size: 12px;
+}
+
+.wc-context {
+  margin: 0 0 12px;
+  padding-left: 20px;
+  color: #b9ab8b;
+  line-height: 1.55;
+  font-size: 14.5px;
+}
+
+.wc-context li {
+  margin-bottom: 3px;
+}
+
+/* the four demands */
+
+.wc-demands {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 8px;
+  margin-bottom: 10px;
+}
+
+.wc-demand {
+  padding: 8px 10px;
+  text-align: center;
+  background: rgba(217, 180, 91, 0.08);
+  border: 1px solid #6d5b2e;
+  border-radius: 8px;
+}
+
+.wc-demand-label {
+  font-size: 11px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: #a893c9;
+  margin-bottom: 3px;
+}
+
+.wc-demand-val {
+  font-family: Consolas, "Courier New", monospace;
+  font-size: 15px;
+  color: #f5d67a;
+}
+
+.wc-base {
+  font-size: 13px;
+  color: #8f8268;
+  font-family: Consolas, "Courier New", monospace;
+}
+
+/* ---------- the hand of decision cards ---------- */
+
+.wc-hand-title {
+  font-size: 13px;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  color: #b7a77a;
+  margin: 4px 2px 10px;
+}
+
+.wc-hand {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 12px;
+}
+
+.wc-card {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  width: 100%;
+  text-align: left;
+  padding: 13px 14px;
+  background: linear-gradient(160deg, #f3e6c8, #e7d2a4);
+  color: #2b2118;
+  border: 2px solid #8a7448;
+  border-radius: 10px;
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 14px;
+  line-height: 1.45;
+  position: relative;
+  transition: transform 0.14s, box-shadow 0.14s, border-color 0.14s;
+  animation: mg-rise 0.3s ease-out;
+}
+
+.wc-card:hover:not(:disabled) {
+  transform: translateY(-3px);
+  border-color: #d9b45b;
+  box-shadow: 0 6px 18px rgba(217, 180, 91, 0.3);
+}
+
+.wc-card:focus-visible {
+  outline: 2px solid #6b5638;
+  outline-offset: 2px;
+}
+
+.wc-card-selected {
+  border-color: #d9b45b;
+  background: linear-gradient(160deg, #fdf3d7, #f0deb0);
+  box-shadow: 0 0 0 2px rgba(217, 180, 91, 0.55), 0 8px 22px rgba(217, 180, 91, 0.4);
+  transform: translateY(-4px);
+}
+
+.wc-card-selected::after {
+  content: "SEALED";
+  position: absolute;
+  top: 10px;
+  right: -26px;
+  transform: rotate(38deg);
+  font-size: 10px;
+  font-weight: bold;
+  letter-spacing: 0.22em;
+  color: #fff6dd;
+  background: #a1262b;
+  padding: 3px 30px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.35);
+  pointer-events: none;
+}
+
+.wc-card-refuse {
+  animation: wc-refuse 0.3s ease-out;
+}
+
+.wc-card-top {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+}
+
+.wc-card-icon {
+  font-size: 22px;
+  line-height: 1;
+  color: #6b5638;
+}
+
+.wc-card-names {
+  flex: 1;
+  min-width: 0;
+}
+
+.wc-card-name {
+  font-size: 17px;
+  font-weight: bold;
+  letter-spacing: 0.02em;
+}
+
+.wc-card-real {
+  font-size: 11px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: #6b5638;
+}
+
+.wc-card-key {
+  flex: 0 0 auto;
+  font-family: Consolas, "Courier New", monospace;
+  font-size: 12px;
+  font-weight: bold;
+  color: #6b5638;
+  border: 1px solid #8a7448;
+  border-radius: 5px;
+  padding: 1px 7px;
+  background: rgba(255, 250, 235, 0.6);
+}
+
+.wc-card-what {
+  margin: 0;
+  font-size: 13.5px;
+  line-height: 1.5;
+}
+
+/* stat chips (honest deltas) */
+
+.wc-card-stats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.wc-chip {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 5px;
+  padding: 2px 8px;
+  border-radius: 999px;
+  border: 1px solid #8a7448;
+  font-family: Consolas, "Courier New", monospace;
+  font-size: 12px;
+  background: rgba(255, 250, 235, 0.5);
+}
+
+.wc-chip-label {
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  opacity: 0.75;
+}
+
+.wc-chip-good {
+  border-color: #3f9e57;
+  color: #22592f;
+  background: rgba(63, 158, 87, 0.14);
+}
+
+.wc-chip-bad {
+  border-color: #c03434;
+  color: #7c1a1a;
+  background: rgba(192, 52, 52, 0.1);
+}
+
+.wc-chip-zero {
+  color: #6b5638;
+  opacity: 0.8;
+}
+
+.wc-card-note {
+  font-size: 12.5px;
+  line-height: 1.5;
+  padding: 7px 9px;
+  background: rgba(109, 91, 46, 0.14);
+  border-left: 3px solid #8a7448;
+  border-radius: 4px;
+}
+
+.wc-card-note-label {
+  font-weight: bold;
+  letter-spacing: 0.06em;
+  color: #6b5638;
+}
+
+.wc-card-backfire {
+  font-size: 12.5px;
+  font-style: italic;
+  line-height: 1.5;
+  color: #7c2a20;
+}
+
+.wc-card-backfire-label {
+  font-weight: bold;
+  font-style: normal;
+  letter-spacing: 0.06em;
+  color: #8a1d1d;
+}
+
+/* ---------- commit bar ---------- */
+
+.wc-commit-bar {
+  position: sticky;
+  bottom: 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  margin-top: 14px;
+  padding: 12px 16px;
+  background: linear-gradient(#1d1636f2, #120e22f8);
+  border: 1px solid #6d5b2e;
+  border-radius: 10px;
+  box-shadow: 0 -4px 18px rgba(0, 0, 0, 0.5);
+}
+
+.wc-count {
+  font-size: 14px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: #e8dcc0;
+}
+
+.wc-commit-bar .mg-primary:disabled {
+  opacity: 0.45;
+  cursor: default;
+  transform: none;
+  box-shadow: none;
+}
+
+/* ---------- resolution: the four meters ---------- */
+
+.wc-meters {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding: 18px 18px 20px;
+  background: linear-gradient(170deg, #1d1636, #140f26);
+  border: 2px solid #6d5b2e;
+  border-radius: 10px;
+  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.5);
+  animation: mg-rise 0.35s ease-out;
+}
+
+.wc-meter-head {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+  margin-bottom: 5px;
+}
+
+.wc-meter-label {
+  flex: 1;
+  font-size: 12px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: #a893c9;
+}
+
+.wc-meter-value {
+  font-family: Consolas, "Courier New", monospace;
+  font-size: 15px;
+  color: #e8dcc0;
+}
+
+.wc-meter-target {
+  font-family: Consolas, "Courier New", monospace;
+  font-size: 12px;
+  color: #b7a77a;
+}
+
+.wc-meter-bar {
+  position: relative;
+  height: 16px;
+  background: #241d38;
+  border: 1px solid #4a3c68;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.wc-meter-fill {
+  height: 100%;
+  background: linear-gradient(#c9a44e, #8a6d2b);
+  box-shadow: inset 0 2px 2px rgba(255, 255, 255, 0.2);
+  transition: width 0.9s cubic-bezier(0.3, 0.9, 0.35, 1);
+}
+
+.wc-meter-fill-quality {
+  background: linear-gradient(#7fb2d9, #3d6a94);
+}
+
+.wc-meter-tick {
+  position: absolute;
+  top: -2px;
+  bottom: -2px;
+  width: 2px;
+  background: #f5d67a;
+  box-shadow: 0 0 6px rgba(245, 214, 122, 0.9);
+}
+
+.wc-met .wc-meter-fill {
+  background: linear-gradient(#63c67d, #2e7742);
+  animation: wc-meter-glow 0.7s ease-out;
+}
+
+.wc-met .wc-meter-value {
+  color: #7fd18f;
+}
+
+.wc-breach .wc-meter-fill {
+  background: linear-gradient(#e05555, #8f1d1d);
+  animation: wc-meter-burn 0.7s ease-out;
+}
+
+.wc-breach .wc-meter-value {
+  color: #e37f7f;
+}
+
+.wc-breach .wc-meter-label {
+  color: #e37f7f;
+}
+
+/* ---------- reveal: notes, pairs, verdict ---------- */
+
+.wc-reveal {
+  opacity: 0;
+  transform: translateY(10px);
+  pointer-events: none;
+  transition: opacity 0.5s ease, transform 0.5s ease;
+  margin-top: 16px;
+}
+
+.wc-reveal-show {
+  opacity: 1;
+  transform: translateY(0);
+  pointer-events: auto;
+}
+
+.wc-notes {
+  padding: 14px 16px;
+  background: rgba(0, 0, 0, 0.28);
+  border: 1px solid rgba(217, 180, 91, 0.25);
+  border-radius: 10px;
+}
+
+.wc-notes-title {
+  font-size: 12px;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  color: #b7a77a;
+  margin-bottom: 10px;
+}
+
+.wc-note-row {
+  padding: 9px 0;
+  border-bottom: 1px solid rgba(217, 180, 91, 0.14);
+}
+
+.wc-note-row:last-child {
+  border-bottom: none;
+}
+
+.wc-note-head {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  margin-bottom: 5px;
+}
+
+.wc-note-head .wc-card-icon {
+  font-size: 16px;
+  color: #d9b45b;
+}
+
+.wc-note-name {
+  font-size: 15px;
+  color: #f5d67a;
+}
+
+.wc-note-real {
+  font-size: 11px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: #a893c9;
+}
+
+.wc-note-row .wc-chip {
+  background: rgba(0, 0, 0, 0.3);
+}
+
+.wc-note-row .wc-chip-good { color: #7fd18f; }
+.wc-note-row .wc-chip-bad { color: #e37f7f; }
+.wc-note-row .wc-chip-zero { color: #b7a77a; }
+
+.wc-note-text {
+  margin-top: 6px;
+  font-size: 13px;
+  line-height: 1.55;
+  color: #cbbd9c;
+}
+
+.wc-pair-row {
+  display: flex;
+  gap: 9px;
+  align-items: baseline;
+  margin-top: 8px;
+  padding: 9px 11px;
+  font-size: 13px;
+  line-height: 1.5;
+  color: #d8c6e8;
+  background: rgba(168, 147, 201, 0.1);
+  border: 1px solid rgba(168, 147, 201, 0.35);
+  border-radius: 8px;
+}
+
+.wc-pair-mark {
+  color: #a893c9;
+  font-size: 16px;
+}
+
+.wc-verdict {
+  margin-top: 14px;
+  padding: 14px 16px;
+  text-align: center;
+  border-radius: 10px;
+  border: 2px solid;
+}
+
+.wc-verdict-won {
+  border-color: #3f9e57;
+  background: rgba(63, 158, 87, 0.12);
+}
+
+.wc-verdict-lost {
+  border-color: #c03434;
+  background: rgba(192, 52, 52, 0.1);
+}
+
+.wc-verdict-big {
+  font-size: 20px;
+  letter-spacing: 0.04em;
+  color: #f5d67a;
+}
+
+.wc-verdict-lost .wc-verdict-big {
+  color: #e37f7f;
+}
+
+.wc-verdict-sub {
+  margin-top: 4px;
+  font-size: 14px;
+  color: #cbbd9c;
+  font-style: italic;
+}
+
+.wc-reveal-actions {
+  text-align: center;
+}
+
+/* ---------- debrief panel ---------- */
+
+.wc-debrief {
+  text-align: left;
+}
+
+.wc-debrief .mg-eyebrow,
+.wc-debrief .mg-title,
+.wc-debrief .mg-subtitle {
+  text-align: center;
+}
+
+.wc-debrief-title {
+  font-size: clamp(26px, 5vw, 38px);
+}
+
+.wc-debrief-score {
+  margin: 10px auto 14px;
+  padding: 8px 14px;
+  width: fit-content;
+  font-size: 15px;
+  letter-spacing: 0.08em;
+  border-radius: 999px;
+  border: 1px solid;
+}
+
+.wc-debrief-score-won {
+  color: #7fd18f;
+  border-color: #3f9e57;
+  background: rgba(63, 158, 87, 0.12);
+}
+
+.wc-debrief-score-lost {
+  color: #e37f7f;
+  border-color: #c03434;
+  background: rgba(192, 52, 52, 0.1);
+}
+
+.wc-best {
+  margin: 4px 0 12px;
+}
+
+.wc-best-label {
+  font-size: 12px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: #b7a77a;
+  margin-bottom: 8px;
+}
+
+.wc-best-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.wc-best-chip {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 7px;
+  padding: 6px 14px;
+  border-radius: 999px;
+  border: 1px solid #d9b45b;
+  color: #f5d67a;
+  background: rgba(217, 180, 91, 0.1);
+  font-size: 15px;
+  box-shadow: 0 0 10px rgba(217, 180, 91, 0.2);
+}
+
+.wc-best-chip .wc-card-icon {
+  font-size: 15px;
+  color: #d9b45b;
+}
+
+.wc-debrief-text {
+  margin: 10px 0 4px;
+  padding: 13px 15px;
+  background: linear-gradient(#f7ecd2, #eeddb4);
+  color: #2b2118;
+  border-left: 3px solid #8a7448;
+  border-radius: 6px;
+  line-height: 1.65;
+  font-size: 15px;
+}
+
+/* ---------- end screen ---------- */
+
+.wc-end .mg-recap {
+  max-height: 190px;
+}
+
+/* ---------- keyframes ---------- */
+
+@keyframes wc-refuse {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-5px); }
+  50% { transform: translateX(5px); }
+  75% { transform: translateX(-3px); }
+}
+
+@keyframes wc-meter-glow {
+  0% { filter: brightness(2.4); }
+  100% { filter: brightness(1); }
+}
+
+@keyframes wc-meter-burn {
+  0% { filter: brightness(2.8); }
+  30% { filter: brightness(1.4); }
+  100% { filter: brightness(1); }
+}
+
+/* ---------- small screens & accessibility ---------- */
+
+@media (max-width: 700px) {
+  .wc-hand {
+    grid-template-columns: 1fr;
+  }
+  .wc-brief { padding: 14px; }
+  .wc-commit-bar { flex-direction: column; gap: 8px; }
+  .wc-demands { grid-template-columns: repeat(2, 1fr); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  /* the reveal must still appear; meters may snap instantly */
+  .wc-reveal {
+    opacity: 1;
+    transform: none;
+    pointer-events: auto;
+  }
+}

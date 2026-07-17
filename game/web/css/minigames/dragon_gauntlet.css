@@ -1,0 +1,876 @@
+/*
+ * The Grand Trial — The Dragon (final boss gauntlet) styling.
+ * All classes are dg- prefixed and self-contained (own keyframes included).
+ * Dark fantasy: obsidian backdrop with ember light, parchment cards,
+ * antique gold, dragonfire red. System fonts only; all animation CSS-based.
+ */
+
+/* ---------- root overlay ---------- */
+
+.dg-root {
+  position: absolute;
+  inset: 0;
+  overflow-y: auto;
+  z-index: 40;
+  background:
+    radial-gradient(ellipse at 50% 110%, rgba(192, 62, 22, 0.28) 0%, transparent 55%),
+    radial-gradient(ellipse at 50% 14%, #241028 0%, #0d0714 65%, #050308 100%);
+  font-family: Georgia, "Times New Roman", serif;
+  color: #e8dcc0;
+}
+
+.dg-root * {
+  box-sizing: border-box;
+}
+
+.dg-root button {
+  font-family: inherit;
+}
+
+.dg-mono {
+  font-family: Consolas, "Courier New", monospace;
+}
+
+.dg-screen {
+  min-height: 100%;
+  display: flex;
+}
+
+/* practice ribbon */
+
+.dg-ribbon {
+  position: absolute;
+  top: 14px;
+  right: -44px;
+  z-index: 60;
+  transform: rotate(35deg);
+  padding: 5px 52px;
+  font-size: 12px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: #120b1c;
+  background: linear-gradient(#e9c766, #c79a3a);
+  border: 1px solid #6d5b2e;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.55);
+  pointer-events: none;
+}
+
+/* ---------- panels ---------- */
+
+.dg-panel {
+  width: min(760px, 94%);
+  margin: auto;
+  padding: 30px 30px 34px;
+  text-align: center;
+  background: linear-gradient(170deg, #201028, #120a1c);
+  border: 2px solid #7c2b1c;
+  border-radius: 12px;
+  box-shadow: 0 0 52px rgba(0, 0, 0, 0.8), inset 0 0 80px rgba(40, 8, 10, 0.55);
+  animation: dg-rise 0.35s ease-out;
+}
+
+.dg-splash {
+  padding-top: 26px;
+}
+
+/* phase intro cards trade the dragonfire border for antique gold */
+.dg-phasecard {
+  border-color: #6d5b2e;
+  box-shadow: 0 0 46px rgba(0, 0, 0, 0.75), inset 0 0 70px rgba(30, 20, 8, 0.55);
+}
+
+.dg-eyebrow {
+  font-size: 12px;
+  letter-spacing: 0.38em;
+  text-transform: uppercase;
+  color: #c98a6b;
+  margin-bottom: 8px;
+}
+
+.dg-title {
+  margin: 4px 0 6px;
+  font-size: clamp(32px, 6.4vw, 50px);
+  font-weight: normal;
+  letter-spacing: 0.12em;
+  color: #ff9b5e;
+  text-shadow: 0 0 20px rgba(220, 90, 30, 0.7), 0 0 44px rgba(150, 30, 10, 0.6);
+  animation: dg-title-in 0.8s ease-out;
+}
+
+.dg-subtitle {
+  font-size: 13px;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  color: #a893c9;
+  margin-bottom: 8px;
+}
+
+.dg-flavor {
+  color: #cbbd9c;
+  line-height: 1.65;
+  margin: 14px auto;
+  max-width: 48em;
+}
+
+.dg-menace {
+  font-style: italic;
+  color: #e3c9c0;
+  line-height: 1.65;
+  margin: 14px auto;
+  max-width: 46em;
+}
+
+.dg-curse-note {
+  color: #ff8f8f;
+  text-shadow: 0 0 8px rgba(192, 52, 52, 0.5);
+  margin: 10px 0;
+}
+
+.dg-practice-note {
+  font-size: 13px;
+  letter-spacing: 0.08em;
+  color: #a893c9;
+  margin: 8px 0 0;
+}
+
+.dg-actions {
+  margin-top: 20px;
+}
+
+/* ---------- primary button ---------- */
+
+.dg-primary {
+  font-size: 17px;
+  letter-spacing: 0.06em;
+  padding: 12px 30px;
+  border-radius: 8px;
+  border: 2px solid #d9b45b;
+  background: linear-gradient(#43200e, #23120a);
+  color: #f5d67a;
+  cursor: pointer;
+  transition: box-shadow 0.15s, transform 0.15s, background 0.15s;
+}
+
+.dg-primary:hover {
+  background: linear-gradient(#5b2c12, #2e180c);
+  box-shadow: 0 0 18px rgba(230, 130, 60, 0.5);
+  transform: translateY(-1px);
+}
+
+.dg-primary:focus-visible {
+  outline: 2px solid #f5d67a;
+  outline-offset: 2px;
+}
+
+/* ---------- the dragon (unicode sprite) ---------- */
+
+.dg-dragon {
+  margin: 10px auto 4px;
+  padding: 0;
+  max-width: 100%;
+  overflow-x: auto;
+  font-family: Consolas, "Courier New", monospace;
+  font-size: 12px;
+  line-height: 1.18;
+  text-align: center;
+  white-space: pre;
+  color: #d0452c;
+  background: linear-gradient(180deg, #ffb45e 0%, #e0552c 40%, #8f1d1d 78%, #4a0f14 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  filter: drop-shadow(0 0 12px rgba(220, 80, 30, 0.5));
+  animation: dg-breathe 4.5s ease-in-out infinite;
+}
+
+.dg-dragon-small {
+  font-size: 8.5px;
+}
+
+.dg-dragon-mini {
+  font-size: 6.5px;
+  line-height: 1.12;
+  margin: 0 auto 8px;
+  animation: none;
+}
+
+.dg-dragon-fallen {
+  background: linear-gradient(180deg, #7a7468 0%, #4d463f 60%, #262019 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  filter: none;
+  opacity: 0.85;
+  animation: none;
+}
+
+/* phase list on the gates card */
+
+.dg-phase-list {
+  margin: 16px auto 4px;
+  max-width: 34em;
+  text-align: left;
+  border: 1px solid rgba(217, 180, 91, 0.28);
+  border-radius: 8px;
+  background: rgba(0, 0, 0, 0.3);
+}
+
+.dg-phase-list-row {
+  display: flex;
+  gap: 12px;
+  align-items: baseline;
+  padding: 9px 14px;
+  border-bottom: 1px solid rgba(217, 180, 91, 0.14);
+}
+
+.dg-phase-list-row:last-child {
+  border-bottom: none;
+}
+
+.dg-phase-list-numeral {
+  flex: 0 0 24px;
+  font-size: 18px;
+  color: #f5d67a;
+  text-shadow: 0 0 10px rgba(217, 180, 91, 0.5);
+}
+
+.dg-phase-list-body {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.dg-phase-list-name {
+  letter-spacing: 0.06em;
+  color: #e8dcc0;
+}
+
+.dg-phase-list-rule {
+  font-size: 12px;
+  letter-spacing: 0.06em;
+  color: #a893c9;
+}
+
+/* ---------- phase intro cards ---------- */
+
+.dg-phase-title {
+  font-size: clamp(26px, 5vw, 38px);
+}
+
+.dg-phase-rule {
+  display: inline-block;
+  margin: 6px auto 2px;
+  padding: 7px 18px;
+  font-size: 13px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: #f5d67a;
+  border: 1px solid rgba(217, 180, 91, 0.5);
+  border-radius: 999px;
+  background: rgba(217, 180, 91, 0.08);
+}
+
+.dg-status-strip {
+  display: flex;
+  gap: 26px;
+  justify-content: center;
+  margin-top: 14px;
+}
+
+.dg-status-bit {
+  font-size: 13px;
+  letter-spacing: 0.1em;
+  color: #cbbd9c;
+}
+
+/* ---------- battle stage ---------- */
+
+.dg-stage {
+  position: relative;
+  width: min(820px, 94%);
+  margin: auto;
+  padding: 20px 0 36px;
+}
+
+.dg-hud {
+  margin-bottom: 10px;
+  padding: 12px 15px 14px;
+  background: linear-gradient(#2a1020, #170a14);
+  border: 2px solid #7c2b1c;
+  border-radius: 10px;
+  box-shadow: 0 0 26px rgba(124, 43, 28, 0.4);
+}
+
+.dg-hud-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 7px;
+}
+
+.dg-name {
+  font-size: 19px;
+  letter-spacing: 0.06em;
+  color: #ff9b7e;
+  text-shadow: 0 0 12px rgba(210, 70, 30, 0.6);
+}
+
+.dg-hp-text {
+  font-family: Consolas, "Courier New", monospace;
+  font-size: 13px;
+  color: #e8b9a9;
+}
+
+.dg-hpbar {
+  height: 18px;
+  background: #241d38;
+  border: 1px solid #7c2b1c;
+  border-radius: 9px;
+  overflow: hidden;
+}
+
+.dg-hpbar-fill {
+  height: 100%;
+  background: linear-gradient(#ff8a4d, #a12610);
+  box-shadow: inset 0 2px 2px rgba(255, 255, 255, 0.25);
+  transition: width 0.5s ease;
+}
+
+.dg-wound .dg-hpbar-fill {
+  animation: dg-wound-flash 0.6s ease-out;
+}
+
+.dg-wound .dg-name,
+.dg-wound .dg-dragon-mini {
+  animation: dg-jolt 0.5s ease-out;
+}
+
+.dg-subhead {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 0 2px 8px;
+}
+
+.dg-progress {
+  font-size: 12px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: #b7a77a;
+}
+
+/* heart-gems */
+
+.dg-hearts {
+  display: flex;
+  gap: 14px;
+  padding-right: 6px;
+}
+
+.dg-gem {
+  width: 18px;
+  height: 18px;
+  transform: rotate(45deg);
+  background: linear-gradient(135deg, #ff8f8f 0%, #c02a3c 55%, #7c1020 100%);
+  border: 1px solid #ffb0b0;
+  border-radius: 3px;
+  box-shadow: 0 0 10px rgba(255, 80, 90, 0.65),
+              inset 2px 2px 3px rgba(255, 255, 255, 0.55);
+}
+
+.dg-gem-lost {
+  animation: dg-gem-shatter 0.6s ease-in forwards;
+}
+
+.dg-gem-dead,
+.dg-gem-lost {
+  background: #2a2334;
+  border-color: #4a3f5e;
+  box-shadow: none;
+}
+
+/* timer (quiz phases only) */
+
+.dg-timer {
+  height: 10px;
+  margin-bottom: 12px;
+  background: #241d38;
+  border: 1px solid #4a3c68;
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.dg-timer-fill {
+  height: 100%;
+  width: 100%;
+  background: #e9c766;
+  box-shadow: 0 0 8px rgba(233, 199, 102, 0.6);
+  /* animation set inline by JS: dg-timer-drain <N>s linear forwards */
+}
+
+@keyframes dg-timer-drain {
+  0%   { width: 100%; background: #e9c766; }
+  55%  { background: #e9c766; }
+  75%  { background: #d98a3d; }
+  90%  { background: #c03434; }
+  100% { width: 0%;   background: #c03434; }
+}
+
+/* screen shake (wounds and burns alike) */
+
+.dg-shake {
+  animation: dg-shake 0.5s ease-in-out;
+}
+
+/* ---------- parchment card ---------- */
+
+.dg-card {
+  background: linear-gradient(160deg, #f3e6c8, #e7d2a4);
+  color: #2b2118;
+  border: 2px solid #8a7448;
+  border-radius: 10px;
+  padding: 18px 20px 20px;
+  box-shadow: 0 8px 26px rgba(0, 0, 0, 0.55), inset 0 0 40px rgba(138, 116, 72, 0.12);
+}
+
+.dg-badges {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-bottom: 10px;
+}
+
+.dg-badge {
+  display: inline-block;
+  font-size: 11px;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  padding: 3px 11px;
+  border: 1px solid #8a7448;
+  border-radius: 999px;
+  color: #6b5638;
+  background: rgba(255, 250, 235, 0.45);
+}
+
+.dg-badge-wound {
+  border-color: #a12610;
+  color: #8a2010;
+  background: rgba(192, 62, 22, 0.1);
+}
+
+.dg-prompt {
+  margin: 4px 0 12px;
+  font-size: 18px;
+  line-height: 1.55;
+  text-align: left;
+}
+
+.dg-scn-title {
+  margin: 2px 0 8px;
+  font-size: 24px;
+  font-weight: normal;
+  letter-spacing: 0.05em;
+  color: #5a3214;
+  text-align: left;
+}
+
+.dg-scn-text {
+  font-size: 16.5px;
+}
+
+.dg-code {
+  margin: 0 0 14px;
+  padding: 13px 15px;
+  background: #12101e;
+  color: #dfe6f2;
+  border: 1px solid #3b3358;
+  border-left: 3px solid #d9b45b;
+  border-radius: 6px;
+  font-family: Consolas, "Courier New", monospace;
+  font-size: 14.5px;
+  line-height: 1.55;
+  white-space: pre;
+  tab-size: 4;
+  overflow-x: auto;
+  text-align: left;
+}
+
+/* ---------- choices ---------- */
+
+.dg-choices {
+  display: grid;
+  gap: 10px;
+  margin-top: 6px;
+}
+
+.dg-choice {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+  width: 100%;
+  text-align: left;
+  padding: 12px 14px;
+  background: linear-gradient(#faf0d8, #edd9ae);
+  color: #2b2118;
+  border: 2px solid #8a7448;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 16px;
+  line-height: 1.45;
+  transition: transform 0.12s, box-shadow 0.12s, border-color 0.12s;
+}
+
+.dg-choice:hover:not(:disabled) {
+  transform: translateY(-2px);
+  border-color: #d9b45b;
+  box-shadow: 0 5px 16px rgba(217, 180, 91, 0.3);
+}
+
+.dg-choice:focus-visible {
+  outline: 2px solid #6b5638;
+  outline-offset: 2px;
+}
+
+.dg-choice:disabled {
+  cursor: default;
+}
+
+.dg-choice-key {
+  flex: 0 0 auto;
+  font-family: Consolas, "Courier New", monospace;
+  font-size: 13px;
+  font-weight: bold;
+  color: #6b5638;
+  border: 1px solid #8a7448;
+  border-radius: 5px;
+  padding: 1px 7px;
+  background: rgba(255, 250, 235, 0.6);
+}
+
+.dg-choice-text {
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.dg-choices-mono .dg-choice-text {
+  font-family: Consolas, "Courier New", monospace;
+  font-size: 14.5px;
+}
+
+/* scenario (riddle) choices carry an honest-stats line */
+
+.dg-choice-scn .dg-choice-text {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.dg-choice-label {
+  font-size: 16px;
+}
+
+.dg-choice-stats {
+  font-size: 12.5px;
+  line-height: 1.5;
+  color: #6b5638;
+  font-family: Consolas, "Courier New", monospace;
+}
+
+.dg-choice-correct {
+  border-color: #3f9e57;
+  background: linear-gradient(#e3f0d8, #cfe5bd);
+  box-shadow: 0 0 14px rgba(63, 158, 87, 0.55);
+}
+
+.dg-choice-wrong {
+  border-color: #c03434;
+  background: linear-gradient(#f0d8d8, #e5bdbd);
+  animation: dg-wrong-jitter 0.3s ease-out;
+}
+
+/* ---------- feedback + debrief (the teaching moment) ---------- */
+
+.dg-feedback {
+  margin-top: 16px;
+  padding: 14px 15px;
+  border-radius: 8px;
+  border: 1px solid;
+  animation: dg-rise 0.3s ease-out;
+}
+
+.dg-fb-good {
+  background: rgba(63, 158, 87, 0.14);
+  border-color: #3f9e57;
+}
+
+.dg-fb-bad {
+  background: rgba(192, 52, 52, 0.12);
+  border-color: #c03434;
+}
+
+.dg-fb-verdict {
+  font-size: 18px;
+  font-weight: bold;
+  letter-spacing: 0.03em;
+  margin-bottom: 8px;
+  text-align: left;
+}
+
+.dg-fb-good .dg-fb-verdict { color: #2e7742; }
+.dg-fb-bad  .dg-fb-verdict { color: #8a1d1d; }
+
+.dg-fb-answer {
+  margin: 8px 0;
+  padding: 9px 12px;
+  background: #12101e;
+  color: #dfe6f2;
+  border-radius: 6px;
+  white-space: pre-wrap;
+  word-break: break-word;
+  text-align: left;
+  line-height: 1.5;
+}
+
+.dg-fb-answer-label {
+  color: #f5d67a;
+  font-family: Georgia, "Times New Roman", serif;
+}
+
+.dg-fb-explain {
+  margin: 8px 0;
+  padding: 11px 13px;
+  background: linear-gradient(#f7ecd2, #eeddb4);
+  color: #2b2118;
+  border-left: 3px solid #8a7448;
+  border-radius: 6px;
+  line-height: 1.55;
+  text-align: left;
+}
+
+/* per-choice verdict rows in the riddle debrief */
+
+.dg-verdicts {
+  margin: 10px 0 2px;
+  text-align: left;
+  border: 1px solid rgba(138, 116, 72, 0.5);
+  border-radius: 8px;
+  background: rgba(255, 250, 235, 0.55);
+}
+
+.dg-verdict-row {
+  display: flex;
+  gap: 10px;
+  align-items: baseline;
+  padding: 9px 12px;
+  border-bottom: 1px solid rgba(138, 116, 72, 0.3);
+}
+
+.dg-verdict-row:last-child {
+  border-bottom: none;
+}
+
+.dg-verdict-best {
+  background: rgba(63, 158, 87, 0.12);
+}
+
+.dg-verdict-chosen {
+  background: rgba(192, 52, 52, 0.1);
+}
+
+.dg-verdict-mark {
+  flex: 0 0 18px;
+  font-weight: bold;
+  color: #a12610;
+}
+
+.dg-verdict-best .dg-verdict-mark {
+  color: #2e7742;
+}
+
+.dg-verdict-body {
+  flex: 1;
+  min-width: 0;
+}
+
+.dg-verdict-label {
+  font-weight: bold;
+  color: #2b2118;
+  line-height: 1.4;
+}
+
+.dg-verdict-text {
+  margin-top: 3px;
+  font-size: 14px;
+  line-height: 1.55;
+  color: #4a3a26;
+}
+
+.dg-fb-actions {
+  margin-top: 12px;
+  text-align: right;
+}
+
+/* ---------- outcome screens ---------- */
+
+.dg-stats {
+  display: flex;
+  gap: 34px;
+  justify-content: center;
+  margin: 18px 0 6px;
+}
+
+.dg-stat {
+  min-width: 110px;
+}
+
+.dg-stat-big {
+  font-size: 40px;
+  color: #f5d67a;
+  text-shadow: 0 0 14px rgba(217, 180, 91, 0.5);
+}
+
+.dg-stat-label {
+  font-size: 11px;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  color: #a893c9;
+  margin-top: 2px;
+}
+
+.dg-phase-recap {
+  margin: 8px auto 2px;
+  max-width: 30em;
+}
+
+.dg-phase-recap-row {
+  padding: 4px 0;
+  font-size: 13.5px;
+  letter-spacing: 0.05em;
+  color: #cbbd9c;
+}
+
+.dg-victory {
+  position: relative;
+  overflow: hidden;
+  border-color: #d9b45b;
+  box-shadow: 0 0 60px rgba(217, 180, 91, 0.25), inset 0 0 80px rgba(60, 40, 8, 0.5);
+}
+
+.dg-victory-inner {
+  position: relative;
+  z-index: 1;
+}
+
+.dg-rays {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 1500px;
+  height: 1500px;
+  margin: -750px 0 0 -750px;
+  pointer-events: none;
+  background: repeating-conic-gradient(
+    rgba(245, 214, 122, 0.13) 0deg 8deg,
+    transparent 8deg 26deg
+  );
+  animation: dg-spin 18s linear infinite;
+}
+
+.dg-victory-title {
+  color: #f5d67a;
+  text-shadow: 0 0 24px rgba(245, 214, 122, 0.8), 0 0 60px rgba(217, 180, 91, 0.5);
+  animation: dg-victory-in 0.9s cubic-bezier(0.2, 1.6, 0.4, 1);
+}
+
+.dg-defeat {
+  border-color: #6d2a2a;
+  box-shadow: 0 0 46px rgba(80, 10, 10, 0.55), inset 0 0 70px rgba(40, 6, 10, 0.6);
+}
+
+.dg-defeat-title {
+  color: #e05555;
+  text-shadow: 0 0 18px rgba(192, 52, 52, 0.6);
+}
+
+/* ---------- keyframes ---------- */
+
+@keyframes dg-rise {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes dg-title-in {
+  0%   { opacity: 0; transform: scale(1.25); letter-spacing: 0.3em; }
+  100% { opacity: 1; transform: scale(1); }
+}
+
+@keyframes dg-breathe {
+  0%, 100% { filter: drop-shadow(0 0 10px rgba(220, 80, 30, 0.4)); transform: scale(1); }
+  50%      { filter: drop-shadow(0 0 24px rgba(255, 130, 50, 0.7)); transform: scale(1.015); }
+}
+
+@keyframes dg-wound-flash {
+  0%   { filter: brightness(3); }
+  100% { filter: brightness(1); }
+}
+
+@keyframes dg-jolt {
+  0%   { transform: translateX(0); }
+  30%  { transform: translateX(-6px) rotate(-1.5deg); }
+  60%  { transform: translateX(4px) rotate(1deg); }
+  100% { transform: translateX(0); }
+}
+
+@keyframes dg-shake {
+  10%, 90% { transform: translate(-2px, 0); }
+  20%, 80% { transform: translate(4px, 1px); }
+  30%, 70% { transform: translate(-6px, -2px); }
+  40%, 60% { transform: translate(6px, 2px); }
+  50%      { transform: translate(-4px, 1px); }
+}
+
+@keyframes dg-wrong-jitter {
+  0%, 100% { transform: translateX(0); }
+  25%      { transform: translateX(-5px); }
+  50%      { transform: translateX(5px); }
+  75%      { transform: translateX(-3px); }
+}
+
+@keyframes dg-gem-shatter {
+  0%   { transform: rotate(45deg) scale(1); filter: brightness(3); }
+  40%  { transform: rotate(70deg) scale(1.3); }
+  100% { transform: rotate(45deg) scale(0.9); filter: brightness(1); }
+}
+
+@keyframes dg-spin {
+  to { transform: rotate(360deg); }
+}
+
+@keyframes dg-victory-in {
+  0%   { opacity: 0; transform: scale(0.4); }
+  100% { opacity: 1; transform: scale(1); }
+}
+
+/* ---------- small screens & accessibility ---------- */
+
+@media (max-width: 640px) {
+  .dg-panel { padding: 24px 16px; }
+  .dg-stage { padding-top: 14px; }
+  .dg-card { padding: 14px; }
+  .dg-prompt { font-size: 16px; }
+  .dg-choice { font-size: 15px; padding: 10px 11px; }
+  .dg-dragon { font-size: 8px; }
+  .dg-dragon-small { font-size: 6.5px; }
+  .dg-dragon-mini { display: none; }
+  .dg-stat-big { font-size: 32px; }
+  .dg-stats { gap: 22px; }
+  .dg-scn-title { font-size: 20px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  /* keep the timer drain (it conveys game state); still everything else */
+  .dg-root,
+  .dg-root :not(.dg-timer-fill) {
+    animation: none !important;
+    transition: none !important;
+  }
+}

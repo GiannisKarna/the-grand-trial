@@ -1,0 +1,445 @@
+{
+  "id": "war-council",
+  "title": "The Council of Trade-offs",
+  "scenarios_per_session": 3,
+  "hand_size": 8,
+  "plays_required": 3,
+  "deck": [
+    {
+      "id": "response-cache",
+      "name": "The Mirror of Echoes",
+      "real": "Response cache",
+      "icon": "⟲",
+      "what": "Store finished answers keyed by the question; repeated questions are served from memory without waking the model.",
+      "backfire": "Useless when questions rarely repeat — and a cached answer keeps being served after the truth behind it has changed.",
+      "stats": { "latency_ms": -700, "gold_month": -400, "complexity": 1, "quality": 0 }
+    },
+    {
+      "id": "prompt-cache",
+      "name": "The Sigil of Prefixes",
+      "real": "Prompt (prefix) cache",
+      "icon": "§",
+      "what": "The provider caches the shared prefix of your prompt — system text, rules, examples — so repeated tokens are not reprocessed at full price.",
+      "backfire": "Only an identical prefix counts: short or ever-shifting prompts save almost nothing, and the first write costs a premium.",
+      "stats": { "latency_ms": -250, "gold_month": -450, "complexity": 1, "quality": 0 }
+    },
+    {
+      "id": "queue",
+      "name": "The Patient Line",
+      "real": "Request queue",
+      "icon": "☰",
+      "what": "Requests wait in line instead of hitting the model all at once; a small, steady fleet drains the line at its own pace.",
+      "backfire": "The work still has to happen — under sustained overload the line only grows, and the wait in it becomes your p95.",
+      "stats": { "latency_ms": 500, "gold_month": -250, "complexity": 2, "quality": 0 }
+    },
+    {
+      "id": "vector-db",
+      "name": "The Deep Index",
+      "real": "Vector database (retrieval)",
+      "icon": "❖",
+      "what": "Embed your documents, index them, and retrieve the relevant passages into the prompt — answers come from your facts, not the model's memory.",
+      "backfire": "Retrieval that fetches the wrong passages poisons the prompt, and a stale index serves yesterday's truth with full confidence.",
+      "stats": { "latency_ms": 300, "gold_month": 200, "complexity": 2, "quality": 8 }
+    },
+    {
+      "id": "reranker",
+      "name": "The Second Judge",
+      "real": "Reranker",
+      "icon": "⚖",
+      "what": "A second, finer model re-reads the retrieved candidates and reorders them so only the truly relevant passages reach the prompt.",
+      "backfire": "It can only reorder what retrieval found — with no retrieval stage, or garbage candidates, it ranks nothing worth having.",
+      "stats": { "latency_ms": 250, "gold_month": 120, "complexity": 1, "quality": 3 }
+    },
+    {
+      "id": "smaller-model",
+      "name": "The Lesser Mind",
+      "real": "Smaller model",
+      "icon": "▽",
+      "what": "Swap to a cheaper, faster model: fewer parameters, lower per-token price, quicker answers.",
+      "backfire": "The gold you save comes back as wrong answers on hard inputs — quality drops exactly where the task gets difficult.",
+      "stats": { "latency_ms": -900, "gold_month": -1200, "complexity": 0, "quality": -6 }
+    },
+    {
+      "id": "bigger-model",
+      "name": "The Greater Mind",
+      "real": "Bigger model",
+      "icon": "△",
+      "what": "Swap to the strongest model: better reasoning, better instruction-following, fewer hard failures.",
+      "backfire": "Every single request pays the tax in gold and latency — and it cannot fix bad retrieval, bad prompts, or missing facts.",
+      "stats": { "latency_ms": 800, "gold_month": 1500, "complexity": 0, "quality": 6 }
+    },
+    {
+      "id": "batch-endpoint",
+      "name": "The Night Caravan",
+      "real": "Batch endpoint",
+      "icon": "☽",
+      "what": "Send work in bulk down the provider's batch lane at roughly half price; answers return within minutes to hours.",
+      "backfire": "Nothing about it is interactive — any human waiting on the reply is waiting far, far too long.",
+      "stats": { "latency_ms": 3600000, "gold_month": -1100, "complexity": 1, "quality": 0 }
+    },
+    {
+      "id": "streaming",
+      "name": "The Unbroken Thread",
+      "real": "Token streaming",
+      "icon": "≈",
+      "what": "Send tokens to the client as they are generated; the first words appear almost immediately.",
+      "backfire": "Perceived wait drops, but total generation time is unchanged — it moves no metric that is measured at completion.",
+      "stats": { "latency_ms": 0, "gold_month": 0, "complexity": 1, "quality": 0 }
+    },
+    {
+      "id": "fallback-model",
+      "name": "The Shadow Steward",
+      "real": "Fallback model",
+      "icon": "☂",
+      "what": "When the primary model fails or times out, retry on a second model so the user still gets an answer.",
+      "backfire": "Two models means two prompt tunings, two sets of quirks, two bills — and your weakest answers arrive during your worst incidents.",
+      "stats": { "latency_ms": -100, "gold_month": 150, "complexity": 2, "quality": 1 }
+    },
+    {
+      "id": "rate-limiter",
+      "name": "The Tollgate",
+      "real": "Rate limiter",
+      "icon": "⚔",
+      "what": "Cap requests per key or user; excess traffic is rejected or slowed before it ever reaches the model.",
+      "backfire": "Every request it blocks is a user told no — set it wrong and you throttle your customers, not your abusers.",
+      "stats": { "latency_ms": -150, "gold_month": -350, "complexity": 1, "quality": 0 }
+    },
+    {
+      "id": "fine-tune",
+      "name": "The Forged Mind",
+      "real": "Fine-tuned model",
+      "icon": "⚒",
+      "what": "Train the model further on your own examples so the desired style and task behavior become native — often on a smaller, cheaper base.",
+      "backfire": "Heavy upfront gold and pipelines before the first gain — and when your domain shifts, it keeps answering yesterday's questions with confidence.",
+      "stats": { "latency_ms": -150, "gold_month": 600, "complexity": 3, "quality": 6 }
+    }
+  ],
+  "scenarios": [
+    {
+      "id": "whispering-court",
+      "title": "The Whispering Court",
+      "real": "Customer-support chat for a merchant guild",
+      "flavor": "The guild's patrons whisper their troubles into an enchanted glass, and the glass whispers back. Lately it whispers slowly, expensively — and sometimes it invents refund policies.",
+      "load": "12 requests/sec at peak — human patrons watching the glass",
+      "context": [
+        "70% of questions are word-for-word repeats: parcels, refunds, opening hours.",
+        "Refund and policy answers must be correct — the guild pays for wrong promises.",
+        "The latency demand here is FELT response: how long before the patron sees the answer begin.",
+        "Support policies change weekly."
+      ],
+      "latency_label": "p95 felt response",
+      "base": { "latency_ms": 3200, "gold_month": 2600, "complexity": 3, "quality": 74 },
+      "constraints": { "latency_ms": 1200, "gold_month": 2200, "complexity": 8, "quality": 80 },
+      "hand": ["response-cache", "streaming", "vector-db", "fine-tune", "prompt-cache", "queue", "smaller-model", "bigger-model"],
+      "overrides": {
+        "response-cache": {
+          "stats": { "latency_ms": -1400, "gold_month": -900, "quality": 2 },
+          "note": "Seven of ten questions are word-for-word repeats — the mirror answers most patrons instantly, from answers vetted once and served consistently. Flush it whenever policy shifts, or it serves last week's promises."
+        },
+        "streaming": {
+          "stats": { "latency_ms": -1600 },
+          "note": "Patrons read as the words arrive: felt wait collapses to first-token time. Total generation time is unchanged — but this court measures what patrons feel."
+        },
+        "vector-db": {
+          "stats": { "latency_ms": 200, "gold_month": 150, "quality": 9 },
+          "note": "Grounding replies in the guild's policy scrolls kills the invented refund rules — the biggest honest quality lever on this table."
+        },
+        "fine-tune": {
+          "stats": { "latency_ms": -100, "gold_month": 500, "quality": 7 },
+          "note": "Tuning nails the guild's tone today — but support policies shift weekly, and a tuned mind drifts stale until it is expensively retrained."
+        },
+        "prompt-cache": {
+          "note": "Every request carries the same long system preamble — the shared prefix caches for real, if modest, savings."
+        },
+        "queue": {
+          "note": "Smooths the nine-bell rush — but patrons wait inside it, and this court measures felt wait."
+        },
+        "smaller-model": {
+          "note": "The savings are real. So is the drop: refund answers get riskier, and the floor here is unforgiving."
+        },
+        "bigger-model": {
+          "note": "The quality is real. So is the toll — twelve requests a second, every one paying premium rates."
+        }
+      },
+      "pairs": [
+        {
+          "cards": ["vector-db", "fine-tune"],
+          "delta": { "quality": -3 },
+          "note": "Both decrees push the same axis — once retrieval supplies the facts, tuning's gains shrink to tone."
+        },
+        {
+          "cards": ["smaller-model", "bigger-model"],
+          "delta": { "latency_ms": 100, "gold_month": -300 },
+          "note": "Two contradictory decrees — you replaced the model twice in one sitting. The council strikes both banners: neither takes effect."
+        }
+      ],
+      "debrief": {
+        "best": ["response-cache", "streaming", "vector-db"],
+        "text": "The winning decree: the Mirror of Echoes, the Unbroken Thread, and the Deep Index. The cache erases both wait and gold for the 70% of questions that repeat, streaming makes the rest feel instant, and retrieval fixes the invented refund rules: the meters settle at ~400 ms felt, 1,850 gold, quality 85 — every demand met with room to spare. One caveat the meters flatten: at a 70% hit rate your p95 still lives among the cache misses — the mirror's truest gifts are the gold and the median, and it is streaming that drags the miss path itself under the bar. Interviewers adore that percentile trap. The Forged Mind can take the Deep Index's chair (quality 83) — but it lands on the gold budget to the exact coin (2,200) and its tuned knowledge rots as policies shift weekly, while retrieval stays fresh for free. The Greater Mind is the classic trap: real quality, but it detonates the treasury (3,200 gold against a 2,200 budget). And the Lesser Mind's savings read well until its best line — Mirror, Deep Index, Lesser Mind — lands quality at 79: one point under the floor is still a breach."
+      }
+    },
+    {
+      "id": "alchemists-ledger",
+      "title": "The Alchemists' Ledger",
+      "real": "Overnight contract-summarization pipeline",
+      "flavor": "Each midnight, forty thousand contracts rain into the alchemists' vaults, and by dawn every one must be distilled to its essence. The Grand Alchemist has seen the gold bill and is no longer calm.",
+      "load": "40,000 documents in a single midnight burst — all due by dawn",
+      "context": [
+        "No human watches — a parser consumes the finished files at 3 a.m.",
+        "Every contract is unique; no question ever repeats.",
+        "The 3,000-token instruction rulebook is identical on all 40,000 requests.",
+        "Contract summarization is a narrow, stable domain that changes rarely."
+      ],
+      "latency_label": "p95 per document",
+      "base": { "latency_ms": 4000, "gold_month": 5200, "complexity": 4, "quality": 79 },
+      "constraints": { "latency_ms": 25200000, "gold_month": 3500, "complexity": 10, "quality": 82 },
+      "hand": ["batch-endpoint", "prompt-cache", "fine-tune", "response-cache", "streaming", "queue", "smaller-model", "bigger-model"],
+      "overrides": {
+        "batch-endpoint": {
+          "stats": { "latency_ms": 14400000, "gold_month": -2400 },
+          "note": "Answers due in hours, for work no one watches: this is the caravan's home ground. Half-price tokens, and even a slow batch clears hours before dawn."
+        },
+        "prompt-cache": {
+          "stats": { "latency_ms": -200, "gold_month": -600 },
+          "note": "The 3,000-token rulebook rides identically on all 40,000 requests — the shared prefix is nearly the entire prompt."
+        },
+        "fine-tune": {
+          "stats": { "latency_ms": -300, "gold_month": 400, "quality": 8 },
+          "note": "Narrow, stable, enormous in volume — the one terrain where fine-tuning's heavy upkeep pays for itself. Training gold amortizes across 40,000 documents a night."
+        },
+        "response-cache": {
+          "stats": { "latency_ms": 0, "gold_month": 0 },
+          "note": "No contract ever repeats. Hit rate: zero. The mirror hangs on the wall and reflects nothing — you still pay to build and run it."
+        },
+        "streaming": {
+          "note": "It is three in the morning. The only reader is a parser, and it reads finished files."
+        },
+        "queue": {
+          "stats": { "latency_ms": 18000000, "gold_month": -400 },
+          "note": "Spreading the midnight burst across the night lets a small, cheap fleet do the work — the last contracts wait hours in line, and nobody is awake to feel it."
+        },
+        "smaller-model": {
+          "stats": { "latency_ms": -1500, "gold_month": -1800, "quality": -5 },
+          "note": "Cheap and fast at this volume — but it misses clauses, and the alchemists sign what it summarizes."
+        },
+        "bigger-model": {
+          "stats": { "latency_ms": 2500, "gold_month": 2600 },
+          "note": "A finer mind, taxed 40,000 times a night. At this volume the premium is ruinous."
+        }
+      },
+      "pairs": [
+        {
+          "cards": ["batch-endpoint", "queue"],
+          "delta": { "latency_ms": -18000000, "gold_month": 400 },
+          "note": "The Night Caravan already queues internally — the Patient Line bolted to its side is redundant plumbing: complexity added, nothing else moved."
+        },
+        {
+          "cards": ["smaller-model", "bigger-model"],
+          "delta": { "latency_ms": -1000, "gold_month": -800, "quality": -1 },
+          "note": "Two contradictory decrees — you replaced the model twice in one sitting. The council strikes both banners: neither takes effect."
+        }
+      ],
+      "debrief": {
+        "best": ["batch-endpoint", "prompt-cache", "fine-tune"],
+        "text": "The winning decree: the Night Caravan, the Sigil of Prefixes, and the Forged Mind. No one is awake to wait, so half-price batch tokens are free money; the sigil stops re-paying for the same 3,000-token rulebook 40,000 times a night; and a narrow, stable, high-volume domain is exactly where fine-tuning earns its heavy upkeep: 2,600 gold, quality 87, contracts back ~4 h into a night that allows 7. Caravan + Forged Mind + Lesser Mind also passes at a mere 1,400 gold — but quality lands exactly on the floor (82), one bad week from breach. The Greater Mind fails in every line it takes effect in: +2,600 gold at this volume, and the deepest cut the other decrees can offer (Caravan + Sigil, −3,000) still leaves 4,800 against a budget of 3,500 — while pairing it with the Lesser Mind simply annuls both. The Mirror of Echoes never fires — no contract repeats — and the Patient Line beside the caravan is redundant plumbing: the caravan already queues internally, so the line adds complexity and saves nothing the caravan was not already saving."
+      }
+    },
+    {
+      "id": "beacon-of-the-realm",
+      "title": "The Beacon of the Realm",
+      "real": "Public docs-assistant endpoint under viral spikes",
+      "flavor": "The realm's public beacon answers any traveler's question about the kingdom's works. When a bard's post goes viral, half the world arrives at once — and some of the visitors are not people.",
+      "load": "30 requests/sec on quiet days — 300 when a post goes viral",
+      "context": [
+        "Spike traffic is thousands of strangers asking the same five questions — plus scripted scrapers hammering in bulk.",
+        "The realm's status page measures p95 to COMPLETION; the budget is written against the status page.",
+        "This pipeline has no retrieval stage today.",
+        "The gold budget must survive the spikes, not just the quiet days."
+      ],
+      "latency_label": "p95 to completion",
+      "base": { "latency_ms": 2600, "gold_month": 2800, "complexity": 4, "quality": 81 },
+      "constraints": { "latency_ms": 2000, "gold_month": 2600, "complexity": 8, "quality": 80 },
+      "hand": ["response-cache", "rate-limiter", "fallback-model", "streaming", "queue", "reranker", "smaller-model", "bigger-model"],
+      "overrides": {
+        "response-cache": {
+          "stats": { "latency_ms": -800, "gold_month": -600 },
+          "note": "Viral traffic is thousands of strangers asking the same five questions — hit rate soars exactly when load does. The mirror was built for this."
+        },
+        "rate-limiter": {
+          "stats": { "latency_ms": -300, "gold_month": -700 },
+          "note": "Most of the spike is scripted scrapers re-asking in bulk. Per-key limits shed them before they reach the model — and p95 for real travelers improves when the fleet stops drowning."
+        },
+        "fallback-model": {
+          "note": "When the primary chokes under the spike, a cheaper steward answers something. Availability, not brilliance."
+        },
+        "streaming": {
+          "note": "Travelers feel soothed watching words arrive — but the status page measures p95 to completion, and streaming moves nothing it can see."
+        },
+        "queue": {
+          "note": "The line keeps the fleet alive through the spike — but travelers wait in it, and the measured p95 rises."
+        },
+        "reranker": {
+          "stats": { "quality": 0 },
+          "note": "This pipeline has no retrieval stage. There is nothing to rerank — a fine lever bolted to empty air."
+        },
+        "smaller-model": {
+          "stats": { "gold_month": -1000, "quality": -4 },
+          "note": "Saves gold on every request — and drops answers below the floor the realm promised its travelers."
+        },
+        "bigger-model": {
+          "stats": { "gold_month": 1400, "quality": 5 },
+          "note": "Better answers, slower and dearer — and under a viral spike, slower is the one thing you cannot afford."
+        }
+      },
+      "pairs": [
+        {
+          "cards": ["smaller-model", "bigger-model"],
+          "delta": { "latency_ms": 100, "gold_month": -400, "quality": -1 },
+          "note": "Two contradictory decrees — you replaced the model twice in one sitting. The council strikes both banners: neither takes effect."
+        }
+      ],
+      "debrief": {
+        "best": ["response-cache", "rate-limiter", "fallback-model"],
+        "text": "The winning decree: the Mirror of Echoes, the Tollgate, and the Shadow Steward. Viral traffic means thousands of strangers asking the same five questions — the mirror's hit rate soars exactly when load does; the tollgate sheds scripted scrapers instead of customers; and the steward keeps answers flowing when the primary chokes at the worst hour: p95 1,400 ms, 1,650 gold, quality 82. Mirror + Tollgate are so strong here they carry almost any third card — with the Patient Line you pass at exactly 2,000 ms, with the Unbroken Thread you pass while soothing humans the status page cannot see. The Greater Mind breaches latency (2,300 ms against a 2,000 budget) and the treasury besides (2,900 gold against 2,600). The Lesser Mind breaches quality (77 against a floor of 80). And the Second Judge ranks nothing — this pipeline has no retrieval stage to feed it."
+      }
+    },
+    {
+      "id": "deep-archive",
+      "title": "The Order of the Deep Archive",
+      "real": "Internal research assistant over 60,000 private scrolls",
+      "flavor": "Beneath the Order's halls sleep sixty thousand scrolls no model has ever read. The scholars demand answers drawn from the scrolls themselves — and a wrong citation is grounds for exile.",
+      "load": "2 requests/sec from 200 scholars — patience is long, standards are not",
+      "context": [
+        "The answers live ONLY inside the private scrolls — the model has never read them.",
+        "Questions are deep, unique, and multi-step; no question repeats.",
+        "A wrong citation in a scholar's treatise is a scandal: the quality floor is brutal.",
+        "There is no retrieval today: the model answers from training alone (quality 70)."
+      ],
+      "latency_label": "p95 to completion",
+      "base": { "latency_ms": 3500, "gold_month": 1800, "complexity": 3, "quality": 70 },
+      "constraints": { "latency_ms": 8000, "gold_month": 3200, "complexity": 9, "quality": 88 },
+      "hand": ["vector-db", "reranker", "bigger-model", "fine-tune", "prompt-cache", "response-cache", "smaller-model", "streaming"],
+      "overrides": {
+        "vector-db": {
+          "stats": { "latency_ms": 400, "gold_month": 250, "quality": 12 },
+          "note": "The answers live in the scrolls, not the model. Retrieval is the single lever that puts the Order's facts in front of the mind that must cite them."
+        },
+        "reranker": {
+          "stats": { "latency_ms": 300, "gold_month": 150, "quality": 0 },
+          "note": "Alone it has nothing to judge. Beside the Deep Index it re-reads the candidates and keeps only the truly relevant — over 60,000 scrolls, that is the difference between citation and scandal."
+        },
+        "bigger-model": {
+          "stats": { "latency_ms": 900, "gold_month": 900 },
+          "note": "Scholars ask multi-step questions. Given the right passages, the greater mind earns its keep reasoning across them."
+        },
+        "fine-tune": {
+          "stats": { "latency_ms": -100, "quality": 4 },
+          "note": "Tuning teaches the Order's citation style — it does not teach the contents of 60,000 scrolls. Facts must be retrieved, not memorized."
+        },
+        "prompt-cache": {
+          "stats": { "latency_ms": -200, "gold_month": -300 },
+          "note": "The instruction preamble caches, but the retrieved scrolls differ on every question — only the static prefix saves."
+        },
+        "response-cache": {
+          "stats": { "latency_ms": -200, "gold_month": -100 },
+          "note": "Every scholar's question is one of a kind. Hit rate near zero."
+        },
+        "smaller-model": {
+          "stats": { "gold_month": -700, "quality": -8 },
+          "note": "A lesser mind mangles multi-step reasoning — on this floor, an eight-point drop is catastrophic."
+        },
+        "streaming": {
+          "note": "Scholars happily wait eight seconds for a right answer. Streaming soothes no one here and moves no meter."
+        }
+      },
+      "pairs": [
+        {
+          "cards": ["vector-db", "reranker"],
+          "delta": { "quality": 6 },
+          "note": "Retrieve wide, rerank tight — together they put precisely the right scrolls in the prompt, beyond what either does alone."
+        },
+        {
+          "cards": ["smaller-model", "bigger-model"],
+          "delta": { "gold_month": -200, "quality": 2 },
+          "note": "Two contradictory decrees — you replaced the model twice in one sitting. The council strikes both banners: neither takes effect."
+        }
+      ],
+      "debrief": {
+        "best": ["vector-db", "reranker", "bigger-model"],
+        "text": "The winning decree: the Deep Index, the Second Judge, and the Greater Mind. The scholars' answers live in the scrolls, and retrieval is the only lever that puts those facts in front of a model (+12); the judge makes retrieval over 60,000 scrolls precise (together, +6 more); and the greater mind reasons across what they deliver: quality 94, p95 5,100 ms of 8,000, 3,100 gold of 3,200. Without the Deep Index no line can even reach the floor — the best model-only play stops at quality 80. Index + Judge together already touch the floor exactly (88), so any third card that costs no quality technically passes — but a system that meets a brutal floor with zero margin is one bad retrieval from exile; the Greater Mind is what buys the margin. The Forged Mind is this council's great lesson: fine-tuning teaches style and format, not the contents of 60,000 scrolls. Swap it in for the Greater Mind and you still pass (quality 92, 2,800 gold) — a fair budget play, but it caps lower and maxes the council's complexity tolerance at exactly 9. Index + Judge + Greater Mind is the archetypal retrieval answer an interviewer wants to hear defended."
+      }
+    },
+    {
+      "id": "gold-drinkers-bill",
+      "title": "The Gold-Drinker's Bill",
+      "real": "Internal drafting assistant after a 50% budget cut",
+      "flavor": "The treasury has spoken: the scribes' drafting familiar must cost half of what it costs today, by decree, by month's end. The scribes would prefer it still write well.",
+      "load": "8 requests/sec in business hours — scribes are patient, to a point",
+      "context": [
+        "The decree: monthly gold halved — 4,000 spent today, 2,000 allowed tomorrow.",
+        "Drafting guild letters is a narrow, stable, forgiving task — a human edits every draft.",
+        "Every request carries the same 2,000-token style guide as prompt preamble.",
+        "Scribes tolerate a pause but must stay in flow: three seconds, no more."
+      ],
+      "latency_label": "p95 to completion",
+      "base": { "latency_ms": 2200, "gold_month": 4000, "complexity": 4, "quality": 84 },
+      "constraints": { "latency_ms": 3000, "gold_month": 2000, "complexity": 9, "quality": 78 },
+      "hand": ["smaller-model", "prompt-cache", "fine-tune", "batch-endpoint", "response-cache", "rate-limiter", "queue", "bigger-model"],
+      "overrides": {
+        "smaller-model": {
+          "stats": { "latency_ms": -700, "gold_month": -1400, "quality": -5 },
+          "note": "Drafting routine letters sits squarely within the lesser mind's power — and a human scribe edits every draft anyway."
+        },
+        "prompt-cache": {
+          "stats": { "latency_ms": -200, "gold_month": -500 },
+          "note": "The 2,000-token style guide rides on every request. Cache the prefix and stop paying for it."
+        },
+        "fine-tune": {
+          "stats": { "latency_ms": -300, "gold_month": -400, "quality": 3 },
+          "note": "Tune on the guild's own approved drafts and house style becomes native — the style guide leaves the prompt entirely, and the bill shrinks with it."
+        },
+        "batch-endpoint": {
+          "stats": { "latency_ms": 2700000, "gold_month": -900 },
+          "note": "Half-price tokens — but a scribe waiting most of an hour for each draft is a scribe not drafting. This tool is interactive."
+        },
+        "response-cache": {
+          "stats": { "latency_ms": -100, "gold_month": -150 },
+          "note": "Every letter is different; only boilerplate fragments repeat. The hit rate disappoints."
+        },
+        "rate-limiter": {
+          "stats": { "latency_ms": 0, "gold_month": -250 },
+          "note": "Caps the few scribes who script the familiar for bulk mail-merge. Modest savings, some grumbling."
+        },
+        "queue": {
+          "stats": { "latency_ms": 600, "gold_month": -300 },
+          "note": "A smaller fleet costs less, and drafts queue at the nine-bell peak. Scribes are patient — to a point."
+        },
+        "bigger-model": {
+          "stats": { "latency_ms": 700, "gold_month": 1300, "quality": 4 },
+          "note": "A finer pen for a task that never asked for one. In a cost purge, this is how tools get cancelled."
+        }
+      },
+      "pairs": [
+        {
+          "cards": ["smaller-model", "fine-tune"],
+          "delta": { "quality": 1 },
+          "note": "Forged on the guild's own drafts, the lesser mind writes nearly as the greater one did — on this narrow domain."
+        },
+        {
+          "cards": ["prompt-cache", "fine-tune"],
+          "delta": { "gold_month": 200 },
+          "note": "Once the forged mind knows the house style, the guide leaves the prompt — and most of the prefix the sigil was caching leaves with it. Overlapping savings do not stack."
+        },
+        {
+          "cards": ["smaller-model", "bigger-model"],
+          "delta": { "gold_month": 100, "quality": 1 },
+          "note": "Two contradictory decrees — you replaced the model twice in one sitting. The council strikes both banners: neither takes effect."
+        }
+      ],
+      "debrief": {
+        "best": ["smaller-model", "prompt-cache", "fine-tune"],
+        "text": "The winning decree: the Lesser Mind, the Sigil of Prefixes, and the Forged Mind. When the treasury is halved, the model must shrink — that one decision does the heavy lifting (−1,400 gold). The sigil stops paying to resend the style guide, and the forged mind makes that guide unnecessary while winning back what the smaller model lost (−5 quality, +3 from tuning, +1 more because tuning a small model on a narrow domain is where it shines) — though the council docks the overlap, since once the guide leaves the prompt there is less prefix left to cache: 1,900 gold of 2,000, quality 83, p95 ~1,000 ms. No line without the Lesser Mind gets under budget — the deepest cuts stop at 2,300 gold, and they lean on the Night Caravan, whose 45-minute waits breach latency in every line they touch. The Greater Mind during a cost purge is how tools get cancelled (+1,300 gold). And swapping the Forged Mind for the Patient Line or the Tollgate still passes at quality 79 — fifty or a hundred gold saved that the budget never asked for, and four points of quality paid for it."
+      }
+    }
+  ]
+}

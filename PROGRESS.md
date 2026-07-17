@@ -15,6 +15,20 @@ at the end of every session (Law 3).
 
 ## Session log
 
+### 2026-07-18 — THE GAME IS FINISHED (Phases 2+3 shipped)
+- Every region now has its Region Trial: The Tavern of One Bartender (async/event
+  loop, Forge), The Sundered Scrolls (RAG, Library), The Summoning Circles
+  (agents/orchestration, Library), The Council of Trade-offs (Decision-Card
+  battles, War Council), and Veldrath the Dragon (final 3-phase gauntlet, Keep).
+- Curse Codex in the HUD, WebAudio SFX with mute, engine-owned Esc-abort,
+  grand-victory celebration. All content adversarially fact-checked by verifier
+  agents; integrator fixed one abort-cleanup leak across all seven minigames.
+- Full-game Playwright playtest: 19/19 checks, zero console/page errors, one
+  trial driven to completion end-to-end; save restored to pristine (now includes
+  "trials": {}).
+- Regions beyond the Rune Plains remain sealed for the student — the Game
+  Master unlocks each when the previous region's P0 lessons are passed.
+
 ### 2026-07-18 — Visual playtest (Game Master, no student play)
 - Full Playwright playthrough in real Chromium: naming, WASD/arrow movement,
   landmark trigger + Enter, region panel, boss gating, Begin Quest, complete

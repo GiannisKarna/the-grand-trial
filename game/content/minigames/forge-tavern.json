@@ -1,0 +1,172 @@
+{
+  "id": "forge-tavern",
+  "title": "The Tavern of One Bartender",
+  "subtitle": "Async and the Event Loop",
+  "flavor": "One bartender. One pair of hands. Every patron in this tavern is served through them — that bartender is the event loop, and tonight you are it. For each order choose: park it, do it, or hand it to the kitchen. Then the ticks fall, and the ledger does not lie.",
+  "resumeCost": 1,
+  "handoffCost": 1,
+  "pickupCost": 1,
+  "quickCpuMax": 2,
+  "rounds": [
+    {
+      "name": "A Quiet Evening",
+      "intro": "Three patrons, one bartender. Learn your three moves before the rush comes.",
+      "patience": 10,
+      "workers": 2,
+      "orders": [
+        {
+          "id": "cellar-ale",
+          "name": "Ale from the Deep Cellar",
+          "kind": "io",
+          "duration": 5,
+          "desc": "Open the tap and the great keg pours on its own. Someone must hand the mug over when it is full."
+        },
+        {
+          "id": "coin-split",
+          "name": "Split a Coin Pouch",
+          "kind": "cpu",
+          "duration": 1,
+          "desc": "Two brothers, one pouch. A single tick of honest counting."
+        },
+        {
+          "id": "widow-grind",
+          "name": "Grind the Widow's Beans",
+          "kind": "cpu",
+          "duration": 6,
+          "desc": "Six ticks of hard grinding. Whoever grinds, grinds — no magic shortens it."
+        }
+      ],
+      "teach": "The bartender is an event loop: ONE pair of hands that every patron shares. I/O work (the ale) pours itself — AWAIT parks it, the kernel does the waiting, and the loop pays a single tick to serve it when the bell rings. CPU work (the grinding) has no background to run in: hands must do it, and the only choice is whose — yours, freezing the whole bar, or the kitchen's, in parallel, for a fixed handoff price."
+    },
+    {
+      "name": "The Supper Rush",
+      "intro": "Five orders land at once. Every tick your hands are busy, EVERY patron pays for it.",
+      "patience": 12,
+      "workers": 2,
+      "orders": [
+        {
+          "id": "stew-pot",
+          "name": "Ladle the Simmering Stew",
+          "kind": "io",
+          "duration": 6,
+          "desc": "The pot simmers over its own fire. Standing there watching it helps no one."
+        },
+        {
+          "id": "merchant-ledger",
+          "name": "Balance the Merchant's Ledger",
+          "kind": "cpu",
+          "duration": 5,
+          "desc": "Five ticks of pure arithmetic, and the merchant watches your quill."
+        },
+        {
+          "id": "spilled-tankard",
+          "name": "Wipe a Spilled Tankard",
+          "kind": "cpu",
+          "duration": 1,
+          "desc": "One quick wipe. Faster done than delegated."
+        },
+        {
+          "id": "cellar-wine",
+          "name": "Uncork the Cellar Wine",
+          "kind": "io",
+          "duration": 4,
+          "desc": "Once opened, it breathes on its own down in the dark."
+        },
+        {
+          "id": "night-loaves",
+          "name": "Knead the Night Loaves",
+          "kind": "cpu",
+          "duration": 7,
+          "desc": "Seven ticks of heavy kneading. The dough does not care whose arms ache."
+        }
+      ],
+      "teach": "Under load the rule shows itself: whenever the loop is busy, every unserved patron drains at once — latency on a blocked loop is shared pain. Parking I/O keeps the bar open for almost nothing; the kitchen keeps long CPU work off your hands for a fixed handoff price. And watch the pass: even a free bartender serves ONE completion per tick — an event loop gives you concurrency by interleaving, never two things literally at once."
+    },
+    {
+      "name": "Festival Night",
+      "intro": "Seven orders, two cooks, one impatient Baron. Festival night is production traffic.",
+      "patience": 12,
+      "workers": 2,
+      "orders": [
+        {
+          "id": "spit-roast",
+          "name": "Roast on the Turning Spit",
+          "kind": "io",
+          "duration": 8,
+          "desc": "The spit turns itself over the fire. Eight ticks until the fat stops spitting."
+        },
+        {
+          "id": "festival-spice",
+          "name": "Grind the Festival Spice",
+          "kind": "cpu",
+          "duration": 6,
+          "desc": "Six ticks of pestle work for the crowd's cups."
+        },
+        {
+          "id": "twins-coin",
+          "name": "Flip the Twins' Coin",
+          "kind": "cpu",
+          "duration": 1,
+          "desc": "One tick to settle the bet before fists do."
+        },
+        {
+          "id": "harvest-cider",
+          "name": "Mull the Harvest Cider",
+          "kind": "io",
+          "duration": 5,
+          "desc": "It steeps on its own; rushing it ruins it."
+        },
+        {
+          "id": "boar-carve",
+          "name": "Carve the Roast Boar",
+          "kind": "cpu",
+          "duration": 5,
+          "desc": "Five ticks of knife work, and it cannot be rushed either."
+        },
+        {
+          "id": "baron-toast",
+          "name": "A Toast for the Baron — NOW",
+          "kind": "cpu",
+          "duration": 2,
+          "patience": 6,
+          "desc": "Two ticks of flourish. The Baron grants you six ticks of patience and not one more."
+        },
+        {
+          "id": "midnight-mead",
+          "name": "Draw the Midnight Mead",
+          "kind": "io",
+          "duration": 3,
+          "desc": "The old cask gives it up slowly, all by itself."
+        }
+      ],
+      "teach": "Festival night is production load: many small completions, a few heavy jobs, one client with a tight deadline. The judgment calls: AWAIT on I/O is nearly free, so it is almost always right; the kitchen charges a fixed handoff, so it pays only when the work outweighs the overhead — the Baron's two-tick toast was faster done at the bar; and there were only two cooks — pools are finite, so a worker wasted watching liquid pour makes real CPU work queue behind it."
+    }
+  ],
+  "tiers": [
+    {
+      "min": 100,
+      "line": "A flawless night — every patron served, every bell answered. You think like a scheduler. Read the ledger anyway: even a perfect score can hide a cook wasted watching a pour."
+    },
+    {
+      "min": 80,
+      "line": "The tavern roars your name. A few ticks slipped away — read the timeline and find where."
+    },
+    {
+      "min": 55,
+      "line": "Half the room went home fed. Study the red ticks: every one of them is a patron's patience you spent."
+    },
+    {
+      "min": 0,
+      "line": "The tavern stands empty and the floor is sticky with waste. Read where the time went — the loop forgives nothing, but it always shows its ledger."
+    }
+  ],
+  "endcard": {
+    "title": "The Bartender's Ledger",
+    "lines": [
+      "AWAIT = asynchronous I/O. The kernel does the waiting in the background; the loop stays free; the only loop cost is the resume — the callback — when the result is ready.",
+      "SEND TO KITCHEN = a worker pool (threads or processes). Parallel hands for CPU-bound work, bought with a fixed handoff overhead — never worth it for tiny tasks, and wasted on I/O the loop could simply await: the worker would only stand and wait.",
+      "DO NOW = running it on the event loop. Right only for genuinely tiny work. Anything long — CPU grinding or synchronous I/O — blocks the loop, and one blocked loop stalls every request in the process. That is the one unforgivable sin.",
+      "The fine print, in Python: the GIL keeps CPython threads from running Python CPU work in parallel, so heavy CPU wants a process pool — which also pays to serialize its arguments. The one honest kitchen use for I/O is a blocking-only library with no async client: wrapping it in a thread (asyncio.to_thread) beats blocking the loop."
+    ]
+  }
+}
