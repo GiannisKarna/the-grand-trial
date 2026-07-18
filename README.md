@@ -6,12 +6,24 @@ by you, from blank files — gate all progression. Claude Code is the Game Maste
 
 ## Play
 
+Windows:
 ```
 play.bat
 ```
+(or `.venv\Scripts\python.exe game\run.py`)
 
-(or `.venv\Scripts\python.exe game\run.py`) — the game opens at
-http://127.0.0.1:8777.
+macOS/Linux:
+```
+./play.sh
+```
+(or `.venv/bin/python game/run.py`)
+
+On macOS, double-click **`play.command`** in Finder to launch without a terminal
+(double-clicking `play.sh` instead opens it as a text file and may prompt to
+install Xcode — that's Finder's default handler for `.sh`, not a real
+requirement, and it's harmless to dismiss).
+
+— the game opens at http://127.0.0.1:8777.
 
 First time here? Walk to **the Rune Plains**, run the daily drill, then open your
 first quest. Quest briefs live in the track folders; you write code in `workspace/`
@@ -26,10 +38,18 @@ the HUD) that hunt you until cleansed.
 
 ## Setup (fresh clone)
 
+Windows:
 ```
 python -m venv .venv
 .venv\Scripts\python.exe -m pip install -r game\requirements.txt
 play.bat
+```
+
+macOS/Linux:
+```
+python3 -m venv .venv
+.venv/bin/python -m pip install -r game/requirements.txt
+./play.sh
 ```
 
 ## The rules of the world
