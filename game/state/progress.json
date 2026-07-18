@@ -1,6 +1,6 @@
 {
   "player": {
-    "name": "Apprentice",
+    "name": "dimitris",
     "xp": 0,
     "level": 1
   },
@@ -29,5 +29,12 @@
     "history": []
   },
   "trials": {},
-  "log": []
+  "log": [
+    {
+      "ts": "2026-07-18T10:23:05.364Z",
+      "actor": "game",
+      "event": "The hero takes the name dimitris.",
+      "xp": 0
+    }
+  ]
 }

@@ -7,8 +7,17 @@ standing contract. It applies to every session, no exceptions.
 
 ## The student
 
-- AI Solutions Engineer, strong on AI theory, self-described "vibe coder".
-- **The gap being fixed:** writing code personally, from a blank page, under pressure.
+- **Dimitris** — AI Solutions Engineer, strong on AI theory and product sense,
+  self-described "vibe coder".
+- **Background: frontend engineer.** ~4 years of JavaScript — vanilla JS
+  fundamentals → React/Next.js → agency/frontend work, plus light Node/Express.
+  He has shipped essentially **no Python and no ML/AI code**. Treat his JS/React
+  fluency as a senior asset to translate *from*.
+- **The gap being fixed:** writing code personally, from a blank page, under
+  pressure — *doubled* here because it's Python (a language he's never shipped)
+  **plus** backend/systems/AI-implementation. Bridge every new concept from its
+  JavaScript equivalent; keep the theory/Decision-Card depth high (his strength);
+  scaffold Python *syntax*, but never write his quest code (Law 1).
 - Interviews within 1–2 months: live Python coding, AI system design, take-home
   project, AI/LLM conceptual deep-dive.
 - Irregular schedule and gets bored easily — keep sessions fun, in-world, and

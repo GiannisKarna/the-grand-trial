@@ -3,6 +3,20 @@
 Human-readable mirror of `game/state/progress.json`. The Game Master updates this
 at the end of every session (Law 3).
 
+## Learner profile (recalibrated 2026-07-18)
+
+**Dimitris** — hero name `dimitris`. Frontend engineer (~4 yrs JavaScript:
+vanilla JS → React/Next.js → agency work, light Node/Express) transitioning into
+AI engineering. Strong on AI theory and product sense; a "vibe coder" who has
+shipped **no Python and no ML/AI code** yet.
+
+**Calibration:** his gap is doubled — Python-from-blank-page *and*
+backend/systems/AI-implementation — while his CS fundamentals and AI theory are
+solid. Bridge every Python/AI concept from its JavaScript equivalent, keep the
+conceptual/Decision-Card depth high, scaffold Python *syntax* (never the quest
+solution). Rune Plains Python fluency is the critical path. Target: interview-ready
+~Aug–Sep 2026.
+
 ## Next up
 
 - Play the game: `play.bat` → do the daily Rune Trial drill.
@@ -14,6 +28,18 @@ at the end of every session (Law 3).
 *None yet — they appear when quiz questions are missed.*
 
 ## Session log
+
+### 2026-07-18 — Recalibration to the actual learner (Dimitris)
+- Original game was authored (by `GiannisKarna`) assuming a Python-fluent student;
+  actual learner is a frontend/JS engineer moving into AI eng. Inspected GitHub
+  (`DBelwnhs`) to ground the profile: React/Next, vanilla JS fundamentals, some
+  Node/Express, CSS/UI — no Python, no ML/AI shipped.
+- Recalibrated the student profile in `CLAUDE.md` and added the learner-profile
+  block above. Teaching adjustment: bridge from JavaScript, keep theory deep,
+  scaffold Python syntax without solving quests. Personal calibration also stored
+  in the Game Master's project memory.
+- Added macOS launchers (`play.command`, `play.sh`) + README setup for mac/Linux.
+- Done on branch `dbelwnhs/calibrate-learner-profile`.
 
 ### 2026-07-18 — THE GAME IS FINISHED (Phases 2+3 shipped)
 - Every region now has its Region Trial: The Tavern of One Bartender (async/event
