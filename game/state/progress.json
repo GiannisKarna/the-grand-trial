@@ -1,7 +1,7 @@
 {
   "player": {
     "name": "dimitris",
-    "xp": 0,
+    "xp": 16,
     "level": 1
   },
   "regions": {
@@ -22,11 +22,33 @@
     }
   },
   "quests": {},
-  "curses": [],
+  "curses": [
+    {
+      "question_id": "pf-l1-016",
+      "bank": "pf-l1",
+      "misses": 1,
+      "hits": 0,
+      "cleansed": false
+    },
+    {
+      "question_id": "pf-l1-003",
+      "bank": "pf-l1",
+      "misses": 1,
+      "hits": 0,
+      "cleansed": false
+    }
+  ],
   "drills": {
-    "embers": 0,
-    "last_day": null,
-    "history": []
+    "embers": 1,
+    "last_day": "2026-07-20",
+    "history": [
+      {
+        "day": "2026-07-20",
+        "correct": 8,
+        "total": 10,
+        "xp": 16
+      }
+    ]
   },
   "trials": {},
   "log": [
@@ -35,6 +57,12 @@
       "actor": "game",
       "event": "The hero takes the name dimitris.",
       "xp": 0
+    },
+    {
+      "ts": "2026-07-20T16:29:32.556Z",
+      "actor": "game",
+      "event": "Daily drill completed: 8/10 correct",
+      "xp": 16
     }
   ]
 }
