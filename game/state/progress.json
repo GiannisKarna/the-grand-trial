@@ -1,7 +1,7 @@
 {
   "player": {
     "name": "dimitris",
-    "xp": 16,
+    "xp": 26,
     "level": 1
   },
   "regions": {
@@ -27,11 +27,39 @@
       "question_id": "pf-l1-016",
       "bank": "pf-l1",
       "misses": 1,
-      "hits": 0,
+      "hits": 1,
       "cleansed": false
     },
     {
       "question_id": "pf-l1-003",
+      "bank": "pf-l1",
+      "misses": 2,
+      "hits": 0,
+      "cleansed": false
+    },
+    {
+      "question_id": "pf-l1-022",
+      "bank": "pf-l1",
+      "misses": 1,
+      "hits": 0,
+      "cleansed": false
+    },
+    {
+      "question_id": "pf-l1-001",
+      "bank": "pf-l1",
+      "misses": 1,
+      "hits": 0,
+      "cleansed": false
+    },
+    {
+      "question_id": "pf-l1-010",
+      "bank": "pf-l1",
+      "misses": 1,
+      "hits": 0,
+      "cleansed": false
+    },
+    {
+      "question_id": "pf-l1-008",
       "bank": "pf-l1",
       "misses": 1,
       "hits": 0,
@@ -39,14 +67,20 @@
     }
   ],
   "drills": {
-    "embers": 1,
-    "last_day": "2026-07-20",
+    "embers": 2,
+    "last_day": "2026-07-22",
     "history": [
       {
         "day": "2026-07-20",
         "correct": 8,
         "total": 10,
         "xp": 16
+      },
+      {
+        "day": "2026-07-22",
+        "correct": 5,
+        "total": 10,
+        "xp": 10
       }
     ]
   },
@@ -63,6 +97,12 @@
       "actor": "game",
       "event": "Daily drill completed: 8/10 correct",
       "xp": 16
+    },
+    {
+      "ts": "2026-07-22T16:22:53.203Z",
+      "actor": "game",
+      "event": "Daily drill completed: 5/10 correct",
+      "xp": 10
     }
   ]
 }
