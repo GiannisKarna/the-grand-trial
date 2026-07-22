@@ -737,3 +737,117 @@
     transition: none !important;
   }
 }
+
+/* ---------- Ask the Teacher (Gemini deep explanation) ---------- */
+
+.mg-ask {
+  margin-top: 12px;
+  text-align: left;
+}
+
+.mg-ask-btn {
+  width: 100%;
+  font-family: inherit;
+  font-size: 15px;
+  letter-spacing: 0.02em;
+  padding: 11px 16px;
+  border-radius: 8px;
+  border: 1px solid #6c5ce7;
+  background: linear-gradient(#241c3a, #171122);
+  color: #cdbff5;
+  cursor: pointer;
+  transition: box-shadow 0.15s, transform 0.12s, background 0.15s;
+}
+
+.mg-ask-btn:hover:not(:disabled) {
+  background: linear-gradient(#302452, #1d1530);
+  box-shadow: 0 0 16px rgba(108, 92, 231, 0.45);
+  transform: translateY(-1px);
+}
+
+.mg-ask-btn:focus-visible {
+  outline: 2px solid #b7a6ff;
+  outline-offset: 2px;
+}
+
+.mg-ask-btn:disabled {
+  cursor: default;
+  opacity: 0.9;
+}
+
+.mg-ask-btn.mg-ask-loading {
+  animation: mg-ask-pulse 1.1s ease-in-out infinite;
+}
+
+@keyframes mg-ask-pulse {
+  0%, 100% { box-shadow: 0 0 6px rgba(108, 92, 231, 0.35); }
+  50% { box-shadow: 0 0 20px rgba(108, 92, 231, 0.75); }
+}
+
+.mg-ask-body {
+  margin-top: 10px;
+  padding: 14px 16px;
+  border-radius: 8px;
+  border: 1px solid #4a3f7a;
+  border-left: 3px solid #8b7bd8;
+  background: linear-gradient(#1a1530, #14101f);
+  color: #e9e5f7;
+  line-height: 1.62;
+  box-shadow: inset 0 0 24px rgba(108, 92, 231, 0.12);
+  animation: mg-rise 0.3s ease-out;
+}
+
+.mg-ask-para {
+  margin: 0 0 11px;
+  white-space: pre-line;      /* keep single newlines the model emits */
+  word-break: break-word;
+}
+
+.mg-ask-para:last-child { margin-bottom: 0; }
+
+.mg-ask-body strong { color: #c9bcff; }
+
+.mg-ask-head {
+  margin: 14px 0 8px;
+  padding-top: 11px;
+  border-top: 1px solid #4a3f7a;
+  font-weight: bold;
+  font-size: 15px;
+  color: #f5d67a;             /* gold, ties back to the interview framing */
+  letter-spacing: 0.02em;
+}
+
+.mg-ask-code {
+  margin: 0 0 11px;
+  padding: 12px 14px;
+  background: #0e0b1a;
+  color: #dfe6f2;
+  border: 1px solid #3b3358;
+  border-left: 3px solid #8b7bd8;
+  border-radius: 6px;
+  font-family: Consolas, "Courier New", monospace;
+  font-size: 14px;
+  line-height: 1.55;
+  white-space: pre;
+  tab-size: 4;
+  overflow-x: auto;
+}
+
+.mg-ask-wait {
+  margin: 0;
+  font-style: italic;
+  color: #b3a9d8;
+}
+
+.mg-ask-error {
+  margin: 0;
+  color: #f0a9a9;
+}
+
+.mg-ask-model {
+  margin-top: 10px;
+  text-align: right;
+  font-size: 12px;
+  color: #8a7fb5;
+  font-style: italic;
+}

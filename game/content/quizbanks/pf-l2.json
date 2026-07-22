@@ -1,0 +1,361 @@
+{
+  "id": "pf-l2",
+  "title": "Flow of Mana",
+  "boss_name": "The Warden of Flow",
+  "questions": [
+    {
+      "id": "pf-l2-001",
+      "type": "predict",
+      "prompt": "What does this print?",
+      "code": "def cast():\n    print(\"fire\")\n\nresult = cast()\nprint(result)",
+      "choices": [
+        "fire\nNone",
+        "fire\nfire",
+        "fire",
+        "None\nfire"
+      ],
+      "answer": 0,
+      "explain": "A function with no return statement (or a bare return) hands back None — always. So cast() runs its print, then returns None into result. Same trap as JS returning undefined: if a function is meant to give a value, it needs an explicit return."
+    },
+    {
+      "id": "pf-l2-002",
+      "type": "predict",
+      "prompt": "What does this print?",
+      "code": "def collect(x, into=[]):\n    into.append(x)\n    return into\n\nprint(collect(1))\nprint(collect(2))",
+      "choices": [
+        "[1]\n[2]",
+        "[1]\n[1, 2]",
+        "[1, 2]\n[1, 2]",
+        "[1]\n[]"
+      ],
+      "answer": 1,
+      "explain": "The default into=[] is created ONCE, when def runs — every call that omits it shares that one list, so state leaks between calls. The fix is the sentinel: into=None, then 'if into is None: into = []' inside. This is the #1 function gotcha in interviews."
+    },
+    {
+      "id": "pf-l2-003",
+      "type": "predict",
+      "prompt": "What does this print?",
+      "code": "def gather(*items):\n    return items\n\nprint(gather(1, 2, 3))",
+      "choices": [
+        "[1, 2, 3]",
+        "(1, 2, 3)",
+        "{1, 2, 3}",
+        "1 2 3"
+      ],
+      "answer": 1,
+      "explain": "*items collects all extra positional arguments into a TUPLE (not a list). This is Python's version of JS ...rest — the only difference is you get a tuple, so it's immutable."
+    },
+    {
+      "id": "pf-l2-004",
+      "type": "predict",
+      "prompt": "What does this print?",
+      "code": "def opts(**kw):\n    return kw\n\nprint(opts(a=1, b=2))",
+      "choices": [
+        "{'a': 1, 'b': 2}",
+        "('a', 'b')",
+        "[('a', 1), ('b', 2)]",
+        "{a: 1, b: 2}"
+      ],
+      "answer": 0,
+      "explain": "**kw collects all extra keyword arguments into a dict, with the argument names as string keys. It's the JS 'options object' pattern built into the language."
+    },
+    {
+      "id": "pf-l2-005",
+      "type": "predict",
+      "prompt": "What does this print?",
+      "code": "def f(a, b=10, *rest):\n    return a, b, rest\n\nprint(f(1, 2, 3, 4))",
+      "choices": [
+        "(1, 10, (2, 3, 4))",
+        "(1, 2, (3, 4))",
+        "(1, 2, [3, 4])",
+        "(1, 2, 3, 4)"
+      ],
+      "answer": 1,
+      "explain": "Positional args fill left to right: a=1, b=2 (overriding its default of 10), and *rest sweeps up the remaining (3, 4) as a tuple. Defaults only apply when an argument isn't supplied."
+    },
+    {
+      "id": "pf-l2-006",
+      "type": "predict",
+      "prompt": "What does this print?",
+      "code": "def seen(x, memo=set()):\n    memo.add(x)\n    return len(memo)\n\nprint(seen(1))\nprint(seen(1))\nprint(seen(2))",
+      "choices": [
+        "1\n1\n2",
+        "1\n2\n3",
+        "1\n1\n1",
+        "1\n2\n2"
+      ],
+      "answer": 0,
+      "explain": "Same mutable-default disease as a list, but with a set: the one set is created at def-time and shared. Adding 1 twice keeps size 1 (sets dedupe); adding 2 makes it 2. The shared state survives across calls."
+    },
+    {
+      "id": "pf-l2-007",
+      "type": "predict",
+      "prompt": "What does this print?",
+      "code": "funcs = [lambda: i for i in range(3)]\nprint([f() for f in funcs])",
+      "choices": [
+        "[0, 1, 2]",
+        "[2, 2, 2]",
+        "[0, 0, 0]",
+        "[3, 3, 3]"
+      ],
+      "answer": 1,
+      "explain": "Late binding: each lambda captures the VARIABLE i, not its value at creation time. By the time you call them, the loop has finished and i is 2, so all three see 2. The classic fix binds now with a default arg: 'lambda i=i: i'."
+    },
+    {
+      "id": "pf-l2-008",
+      "type": "predict",
+      "prompt": "What does this print?",
+      "code": "funcs = [lambda i=i: i for i in range(3)]\nprint([f() for f in funcs])",
+      "choices": [
+        "[2, 2, 2]",
+        "[0, 1, 2]",
+        "[1, 2, 3]",
+        "[0, 0, 0]"
+      ],
+      "answer": 1,
+      "explain": "The default 'i=i' evaluates i immediately, at each lambda's creation, freezing its current value into the parameter. So the functions remember 0, 1, 2 — the standard cure for the late-binding closure trap."
+    },
+    {
+      "id": "pf-l2-009",
+      "type": "predict",
+      "prompt": "What does this print?",
+      "code": "x = 1\ndef f():\n    x = 2\nf()\nprint(x)",
+      "choices": [
+        "1",
+        "2",
+        "None",
+        "UnboundLocalError"
+      ],
+      "answer": 0,
+      "explain": "The 'x = 2' inside f creates a LOCAL x; it never touches the module-level x. To reassign the global you'd need 'global x'. Prefer returning a value over mutating globals. (JS: same idea — a local declaration shadows the outer.)"
+    },
+    {
+      "id": "pf-l2-010",
+      "type": "predict",
+      "prompt": "What does this print?",
+      "code": "def outer():\n    x = 1\n    def inner():\n        nonlocal x\n        x = 2\n    inner()\n    return x\n\nprint(outer())",
+      "choices": [
+        "1",
+        "2",
+        "None",
+        "0"
+      ],
+      "answer": 1,
+      "explain": "'nonlocal x' tells inner to reassign the x in the ENCLOSING function rather than make a new local. So inner() sets outer's x to 2. Without nonlocal, x=2 would be local to inner and outer would still return 1."
+    },
+    {
+      "id": "pf-l2-011",
+      "type": "predict",
+      "prompt": "What does this print?",
+      "code": "def f():\n    try:\n        return \"A\"\n    finally:\n        print(\"B\")\n\nprint(f())",
+      "choices": [
+        "A\nB",
+        "B\nA",
+        "A",
+        "B"
+      ],
+      "answer": 1,
+      "explain": "finally ALWAYS runs before control actually leaves the function — even when the try block hits a return. So 'B' prints during the return, then the returned 'A' prints. finally is your guaranteed-cleanup hook."
+    },
+    {
+      "id": "pf-l2-012",
+      "type": "predict",
+      "prompt": "What does this print?",
+      "code": "try:\n    n = int(\"5\")\nexcept ValueError:\n    print(\"bad\")\nelse:\n    print(\"good\")",
+      "choices": [
+        "good",
+        "bad",
+        "5",
+        "good\nbad"
+      ],
+      "answer": 0,
+      "explain": "int('5') succeeds, so no exception is raised — the except is skipped and the else block runs ('else' = 'the try succeeded'). The else clause keeps the success path out of the try, so you don't accidentally catch exceptions from it."
+    },
+    {
+      "id": "pf-l2-013",
+      "type": "predict",
+      "prompt": "What does this print?",
+      "code": "try:\n    x = [1, 2][5]\nexcept ValueError:\n    print(\"value\")\nexcept IndexError:\n    print(\"index\")",
+      "choices": [
+        "value",
+        "index",
+        "KeyError",
+        "5"
+      ],
+      "answer": 1,
+      "explain": "Indexing a 2-element list at [5] raises IndexError, not ValueError, so the first except is skipped and the IndexError handler runs. Catching the SPECIFIC exception type is the whole point — order your excepts from specific to general."
+    },
+    {
+      "id": "pf-l2-014",
+      "type": "predict",
+      "prompt": "What does this print?",
+      "code": "class Gate:\n    def __enter__(self):\n        print(\"enter\")\n        return self\n    def __exit__(self, *a):\n        print(\"exit\")\n\nwith Gate():\n    print(\"body\")",
+      "choices": [
+        "enter\nbody\nexit",
+        "body\nenter\nexit",
+        "enter\nexit\nbody",
+        "body\nexit"
+      ],
+      "answer": 0,
+      "explain": "'with' calls __enter__ first (setup), runs the body, then always calls __exit__ (teardown). It's try/finally with a reusable shape — the guarantee is that __exit__ runs no matter how the body ends."
+    },
+    {
+      "id": "pf-l2-015",
+      "type": "predict",
+      "prompt": "What does this print?",
+      "code": "class Quiet:\n    def __enter__(self):\n        return self\n    def __exit__(self, *a):\n        return True\n\nwith Quiet():\n    raise ValueError(\"boom\")\nprint(\"survived\")",
+      "choices": [
+        "survived",
+        "ValueError: boom",
+        "boom\nsurvived",
+        ""
+      ],
+      "answer": 0,
+      "explain": "A truthy return from __exit__ SUPPRESSES the exception raised in the body — so the ValueError is swallowed and execution continues to print 'survived'. Returning False (or None) would let it propagate. Suppressing is powerful and easy to abuse — do it deliberately."
+    },
+    {
+      "id": "pf-l2-016",
+      "type": "predict",
+      "prompt": "What does this print?",
+      "code": "def area(w, h):\n    return w * h\n\ndims = {\"w\": 3, \"h\": 4}\nprint(area(**dims))",
+      "choices": [
+        "12",
+        "7",
+        "('w', 'h')",
+        "TypeError"
+      ],
+      "answer": 0,
+      "explain": "**dims spreads the dict into keyword arguments: area(w=3, h=4). The keys must match the parameter names. This is the call-site mirror of **kwargs — Python's built-in spread for named arguments (JS: like spreading an options object)."
+    },
+    {
+      "id": "pf-l2-017",
+      "type": "bug",
+      "prompt": "loadout('sword') then loadout('shield') returns ['sword', 'shield'] — the second call kept the first item. What is the bug?",
+      "code": "def loadout(item, bag=[]):\n    bag.append(item)\n    return bag",
+      "choices": [
+        "bag=[] is created once at def-time, so every call that omits bag shares and mutates the same list; use bag=None then 'if bag is None: bag = []' inside",
+        "append() mutates the parameter name, not the list object",
+        "lists are not allowed as default argument values",
+        "the bug is a missing return type annotation"
+      ],
+      "answer": 0,
+      "explain": "The default list is evaluated a single time, when def runs, and that one list persists between calls — so items pile up. The idiom is the None sentinel. Sometimes a mutable default is used deliberately as a cache, but an accidental one leaks state (in a web service, across requests)."
+    },
+    {
+      "id": "pf-l2-018",
+      "type": "bug",
+      "prompt": "tally(5) crashes with UnboundLocalError even though 'total' clearly exists above. Why?",
+      "code": "total = 0\ndef tally(n):\n    total = total + n\n    return total",
+      "choices": [
+        "assigning to total anywhere in tally makes it local for the whole function, so 'total + n' reads a local that has no value yet; pass total in and return, or declare 'global total'",
+        "you cannot add an int to a module-level variable",
+        "total must be initialised to None, not 0",
+        "functions are not allowed to read module-level variables"
+      ],
+      "answer": 0,
+      "explain": "Assignment makes a name local for the ENTIRE function body, even before the line that assigns it — so 'total + n' looks up a local that isn't bound yet. Best fix: don't mutate the global; take it as a parameter and return the new value. (JS has block scope; Python has function scope — this trap is Python-specific.)"
+    },
+    {
+      "id": "pf-l2-019",
+      "type": "bug",
+      "prompt": "This 'safe' lookup passes tests but hides real bugs in production. What is the accepted criticism?",
+      "code": "def get(config, key):\n    try:\n        return config[key]\n    except:\n        return None",
+      "choices": [
+        "a bare 'except:' swallows everything — typos, KeyboardInterrupt, unrelated bugs — not just the missing key; catch 'except KeyError:' or use config.get(key)",
+        "try/except cannot wrap a return statement",
+        "returning None from a function is always a bug",
+        "config[key] should be written config.get[key]"
+      ],
+      "answer": 0,
+      "explain": "A bare except catches every exception, so a NameError from a typo or a genuine bug gets silently turned into None and you debug for hours. Catch the specific exception you expect (KeyError), or just use config.get(key, None), which never raises."
+    },
+    {
+      "id": "pf-l2-020",
+      "type": "bug",
+      "prompt": "A reviewer flags this for leaking file handles under load. Why, and what's the fix?",
+      "code": "def read_scroll(path):\n    f = open(path)\n    data = f.read()\n    f.close()\n    return data",
+      "choices": [
+        "if f.read() raises, f.close() is skipped and the handle leaks; wrap it in 'with open(path) as f:' so close is guaranteed even on error",
+        "open() must be awaited before reading",
+        "f.read() should be f.readlines() to avoid the leak",
+        "the file must be opened in binary mode 'rb'"
+      ],
+      "answer": 0,
+      "explain": "The close() only runs if read() succeeds; any exception in between skips it and leaks the OS file handle — under load you exhaust the process's handle limit. 'with open(path) as f:' calls close() in the context manager's __exit__, so it runs on success AND on exception."
+    },
+    {
+      "id": "pf-l2-021",
+      "type": "bug",
+      "prompt": "parse('7') returns 7, but parse('x') returns an Exception object instead of a clean failure. Why?",
+      "code": "def parse(s):\n    try:\n        return int(s)\n    except ValueError as e:\n        return e",
+      "choices": [
+        "the except block returns the exception object e as if it were data, so callers get an Exception where they expect an int; raise, or return a sentinel like None, and let the caller decide",
+        "int(s) does not raise on non-numeric strings",
+        "you cannot bind an exception with 'as e'",
+        "'return e' automatically re-raises the exception"
+      ],
+      "answer": 0,
+      "explain": "Catching an error and then returning the exception object smuggles a failure into the success channel — every caller must now type-check the result. Either return a real sentinel (None) and document it, or re-raise/raise a domain error and let the boundary handle it. Don't hand back the exception as a value."
+    },
+    {
+      "id": "pf-l2-022",
+      "type": "truth",
+      "prompt": "True or false: a Python function that finishes without hitting a return statement returns None.",
+      "code": null,
+      "choices": [
+        "True",
+        "False"
+      ],
+      "answer": 0,
+      "explain": "True — no return (or a bare 'return') yields None, exactly like JS functions yielding undefined. The bug it breeds: 'x = my_func()' silently stores None when you expected a value."
+    },
+    {
+      "id": "pf-l2-023",
+      "type": "truth",
+      "prompt": "True or false: a function's default argument values are evaluated once, when the def runs — not freshly on each call — which is why a mutable default like [] leaks state across calls.",
+      "code": null,
+      "choices": [
+        "True",
+        "False"
+      ],
+      "answer": 0,
+      "explain": "True — the default expression runs a single time at definition, and that one object is reused on every call that omits the argument. Mutable defaults ([], {}, set()) therefore accumulate state; the fix is a None sentinel."
+    },
+    {
+      "id": "pf-l2-024",
+      "type": "truth",
+      "prompt": "True or false: in Python an 'if' or 'for' block creates its own scope, so a variable assigned inside it is not visible after the block ends.",
+      "code": null,
+      "choices": [
+        "True",
+        "False"
+      ],
+      "answer": 1,
+      "explain": "False — Python has FUNCTION scope, not block scope. A name assigned inside an if/for leaks to the rest of the enclosing function. (JS 'let'/'const' are block-scoped, so this is a real difference to unlearn.) The one exception: a comprehension's loop variable is private to it."
+    },
+    {
+      "id": "pf-l2-025",
+      "type": "truth",
+      "prompt": "True or false: a 'finally' block runs even when the 'try' block executes a return, raises, or breaks.",
+      "code": null,
+      "choices": [
+        "True",
+        "False"
+      ],
+      "answer": 0,
+      "explain": "True — finally is the guaranteed-cleanup hook: it runs on normal completion, on an uncaught exception on its way out, and even after a return/break/continue in the try. That guarantee is exactly what a context manager (with) packages up for reuse."
+    },
+    {
+      "id": "pf-l2-026",
+      "type": "truth",
+      "prompt": "True or false: for exceptional cases, EAFP (try the operation, handle the exception) is generally preferred in Python over LBYL (check with an if first), partly because it avoids a race between the check and the use.",
+      "code": null,
+      "choices": [
+        "True",
+        "False"
+      ],
+      "answer": 0,
+      "explain": "True — 'Easier to Ask Forgiveness than Permission' is idiomatic Python: one operation instead of check-then-do, and nothing can change between a check and the use (files, shared state). LBYL still wins when the 'missing' case is normal and cheap to test (d.get(k, default))."
+    }
+  ]
+}

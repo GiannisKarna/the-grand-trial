@@ -11,6 +11,7 @@ Priority path for the 1–2 month deadline:
 
 | Status | Pri | Lesson | Contents |
 |---|---|---|---|
+| ☐ | P0 | L0 · First Steps | Beginner on-ramp (JS→Python): running code, variables & types, print/f-strings, if/for/while, reading tracebacks. No boss — done when the warm-up rite runs |
 | ◐ | P0 | L1 · Runes of Data | Core data structures: list/dict/set/tuple, comprehensions, iteration idioms, mutability traps |
 | ☐ | P0 | L2 · Flow of Mana | Functions, args/kwargs, scope, closures, error handling, context managers |
 | ☐ | P0 | L3 · Shaping Runes | Strings, slicing, sorting with keys, lambda, itertools basics |

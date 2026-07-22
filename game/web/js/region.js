@@ -145,7 +145,7 @@
       const trials = REGION_TRIALS[meta.id] || [];
       const regionTrials = trials.filter((t) => !t.dragon);
       const dragonTrial = trials.find((t) => t.dragon) || null;
-      const boss = isDragonKeep ? null : s.bossForRegion(meta.id); // the Dragon replaces the Quiz Boss
+      const boss = isDragonKeep ? null : s.activeBossForRegion(meta.id); // current lesson's boss; Dragon replaces it in the Keep
       const drillDone = s.drillDoneToday();
       const trialDone = s.trialDoneToday(meta.id);
       const bossReady = boss && s.requiresMet(boss);

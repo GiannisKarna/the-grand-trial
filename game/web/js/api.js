@@ -42,5 +42,17 @@
     getQuizbank(bankId) {
       return request(`/api/content/quizbanks/${encodeURIComponent(bankId)}`);
     },
+
+    /* Ask the Teacher: POST question context, get a Gemini deep explanation.
+     * The endpoint always answers 200 with {ok, explanation?, error?}, so a
+     * failed model call surfaces as res.ok === false, not a thrown Error.
+     * Only a network/transport failure rejects. */
+    explain(payload) {
+      return request('/api/explain', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      });
+    },
   };
 })();

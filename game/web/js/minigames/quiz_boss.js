@@ -76,6 +76,56 @@
       .concat(fill.map(function (q) { return { q: q, curse: false }; }));
   }
 
+  /* ---------- Ask the Teacher: safe light-markdown renderer ---------- */
+
+  /* Render **bold** inline WITHOUT innerHTML (XSS-safe): split on the **
+   * delimiter, odd segments are bold. Single newlines survive because the
+   * paragraph is styled white-space: pre-line. */
+  function appendInline(node, text) {
+    text.split("**").forEach(function (chunk, i) {
+      if (chunk === "") return;
+      if (i % 2 === 1) node.appendChild(el("strong", null, chunk));
+      else node.appendChild(document.createTextNode(chunk));
+    });
+  }
+
+  /* Turn Gemini's plain text (with ```fenced``` code blocks) into safe DOM:
+   * fenced spans -> <pre>, blank-line-separated prose -> paragraphs, and a
+   * paragraph opening with the 🎤 marker becomes the interview heading. All
+   * text lands via textContent/createTextNode — never innerHTML of model output. */
+  function renderRichText(container, text) {
+    container.innerHTML = "";
+    String(text).split("```").forEach(function (seg, i) {
+      if (i % 2 === 1) {
+        var code = seg.replace(/^[a-zA-Z0-9_+-]*\n/, "").replace(/\s+$/, "");
+        if (code) container.appendChild(el("pre", "mg-ask-code", code));
+        return;
+      }
+      seg.split(/\n{2,}/).forEach(function (para) {
+        var t = para.trim();
+        if (!t) return;
+        if (t.indexOf("🎤") === 0) {
+          // Heading line, then (often on the very next line) its paragraph:
+          // peel off the first line as the gold interview heading.
+          var nl = t.indexOf("\n");
+          var head = el("div", "mg-ask-head");
+          appendInline(head, nl === -1 ? t : t.slice(0, nl).trim());
+          container.appendChild(head);
+          var rest = nl === -1 ? "" : t.slice(nl + 1).trim();
+          if (rest) {
+            var p = el("p", "mg-ask-para");
+            appendInline(p, rest);
+            container.appendChild(p);
+          }
+        } else {
+          var node = el("p", "mg-ask-para");
+          appendInline(node, t);
+          container.appendChild(node);
+        }
+      });
+    });
+  }
+
   /* ---------- the boss fight ---------- */
 
   function start(overlayEl, bank, opts, onComplete) {
@@ -330,6 +380,8 @@
       }
       if (q.explain) fb.appendChild(el("div", "mg-fb-explain", q.explain));
 
+      appendAskTeacher(fb, q, ok, choiceIdx);
+
       var last = state.hearts <= 0 || state.hp <= 0 || state.idx + 1 >= questions.length;
       var cont = el("button", "mg-primary", last ? "Face the Outcome" : "Continue");
       cont.type = "button";
@@ -340,6 +392,84 @@
 
       state.card.appendChild(fb);
       if (fb.scrollIntoView) fb.scrollIntoView({ block: "nearest" });
+    }
+
+    /* ---------- Ask the Teacher (Gemini deep explanation) ---------- */
+
+    function appendAskTeacher(container, q, wasCorrect, choiceIdx) {
+      var IDLE = "🧙 Ρώτα τον Δάσκαλο — βαθιά εξήγηση";
+      var AGAIN = "🧙 Ρώτησέ τον ξανά";
+
+      var wrap = el("div", "mg-ask");
+      var btn = el("button", "mg-ask-btn", IDLE);
+      btn.type = "button";
+      var body = el("div", "mg-ask-body");
+      body.hidden = true;
+      var loading = false;
+
+      function reset(label) {
+        loading = false;
+        btn.disabled = false;
+        btn.classList.remove("mg-ask-loading");
+        btn.textContent = label;
+      }
+
+      btn.addEventListener("click", function () {
+        if (loading || state.finished) return;
+        if (!window.Game || !Game.API || !Game.API.explain) {
+          body.hidden = false;
+          body.innerHTML = "";
+          body.appendChild(el("p", "mg-ask-error",
+            "Ο δίαυλος προς τον Δάσκαλο δεν είναι έτοιμος."));
+          return;
+        }
+        loading = true;
+        btn.disabled = true;
+        btn.classList.add("mg-ask-loading");
+        btn.textContent = "🔮 Ο Δάσκαλος διαβάζει τη ρούνα σου…";
+        body.hidden = false;
+        body.innerHTML = "";
+        body.appendChild(el("p", "mg-ask-wait", "Σμιλεύει την εξήγησή του…"));
+
+        var payload = {
+          prompt: q.prompt,
+          code: q.code || "",
+          choices: q.choices,
+          type: q.type,
+          correctAnswer: q.choices[q.answer],
+          chosenAnswer: (typeof choiceIdx === "number" && choiceIdx >= 0)
+            ? q.choices[choiceIdx] : null,
+          wasCorrect: !!wasCorrect,
+          explain: q.explain || "",
+          lessonTitle: (bank && bank.title) || "",
+          bossName: (bank && bank.boss_name) || ""
+        };
+
+        Game.API.explain(payload).then(function (res) {
+          if (state.finished) return;
+          reset(AGAIN);
+          body.innerHTML = "";
+          if (res && res.ok && res.explanation) {
+            renderRichText(body, res.explanation);
+            if (res.model) {
+              body.appendChild(el("div", "mg-ask-model", "— ο Δάσκαλος · " + res.model));
+            }
+          } else {
+            body.appendChild(el("p", "mg-ask-error",
+              (res && res.error) || "Ο Δάσκαλος δεν αποκρίθηκε. Δοκίμασε ξανά."));
+          }
+        }).catch(function () {
+          if (state.finished) return;
+          reset(IDLE);
+          body.innerHTML = "";
+          body.appendChild(el("p", "mg-ask-error",
+            "Δεν έφτασε το μήνυμα στον realm server — τρέχει το game/run.py;"));
+        });
+      });
+
+      wrap.appendChild(btn);
+      wrap.appendChild(body);
+      container.appendChild(wrap);
     }
 
     function advance() {

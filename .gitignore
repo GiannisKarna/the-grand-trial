@@ -3,3 +3,10 @@ __pycache__/
 *.pyc
 .pytest_cache/
 game/state/progress.backup.json
+
+# Local secrets — API keys etc. NEVER commit these.
+# The real key lives in secrets.local.json (gitignored); secrets.example.json
+# is the committed template that documents the shape.
+.env
+secrets.local.json
+game/secrets.local.json

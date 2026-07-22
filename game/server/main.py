@@ -21,6 +21,8 @@ from typing import Any
 from fastapi import FastAPI, HTTPException
 from fastapi.staticfiles import StaticFiles
 
+from . import gemini
+
 # --- Paths (all relative to game/, resolved from this file) -----------------
 
 GAME_DIR = Path(__file__).resolve().parent.parent
@@ -154,6 +156,18 @@ def get_minigame_config(minigame_id: str) -> Any:
     return _load_json(
         MINIGAMES_DIR / f"{minigame_id}.json", f"minigame config '{minigame_id}'"
     )
+
+
+@app.post("/api/explain")
+def explain(payload: dict[str, Any]) -> dict[str, Any]:
+    """Proxy the 'Ask the Teacher' deep explanation to Gemini.
+
+    The API key lives server-side (secrets.local.json / GEMINI_API_KEY) and is
+    never sent to the browser. Always returns HTTP 200 with an ``{"ok": ...}``
+    body so the client can render either the explanation or a friendly,
+    in-world error for any failure (no key, rate limit, network, empty reply).
+    """
+    return gemini.explain_question(payload)
 
 
 # --- Static client (registered AFTER the API routes) -------------------------

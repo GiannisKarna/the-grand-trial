@@ -34,6 +34,39 @@
       "requires": ["pf-l1-q1", "pf-l1-q2"]
     },
     {
+      "id": "pf-l2-q1",
+      "region": "rune-plains",
+      "lesson": "L2 · Flow of Mana",
+      "type": "code",
+      "title": "The Mana Conduits",
+      "xp": 100,
+      "path": "01-python-fluency/lesson-02-flow-of-mana/quest-01",
+      "summary": "Forge functions from a blank file: *args and **kwargs, defaults done right, no-mutation, and a real closure.",
+      "requires": ["pf-l1-boss"]
+    },
+    {
+      "id": "pf-l2-q2",
+      "region": "rune-plains",
+      "lesson": "L2 · Flow of Mana",
+      "type": "code",
+      "title": "The Warded Gate",
+      "xp": 100,
+      "path": "01-python-fluency/lesson-02-flow-of-mana/quest-02",
+      "summary": "Tame failure: try/except that catches the right thing, raising on bad input, and a context manager that always cleans up.",
+      "requires": ["pf-l2-q1"]
+    },
+    {
+      "id": "pf-l2-boss",
+      "region": "rune-plains",
+      "lesson": "L2 · Flow of Mana",
+      "type": "boss",
+      "title": "The Warden of Flow",
+      "xp": 50,
+      "bank": "pf-l2",
+      "summary": "Face the Warden: twelve questions on functions, arguments, scope, closures, errors and context managers.",
+      "requires": ["pf-l2-q1", "pf-l2-q2"]
+    },
+    {
       "id": "the-dragon",
       "region": "dragons-keep",
       "lesson": "The Final Trial",

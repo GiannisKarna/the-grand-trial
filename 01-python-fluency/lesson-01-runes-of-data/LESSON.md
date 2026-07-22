@@ -4,6 +4,72 @@
 
 ---
 
+> 🧙 **New to Python?** Do **[L0 · First Steps](../lesson-00-first-steps/LESSON.md)**
+> first (running code, variables, types, reading errors), then come back. Keep the
+> **[JS→Python Bridge Scroll](../PYTHON-CHEATSHEET.md)** open while you work, and
+> press **«Ρώτα τον Δάσκαλο»** in the boss fight for a deep, teacher-to-student
+> explanation *in Greek* of any question and its answer.
+
+## 0 · In plain words (start here)
+
+Python gives you four containers. You already own all four from JavaScript — you
+just spell them differently. Meet them in one breath, with the JS name attached:
+
+- **`list` — your `Array`.** An ordered row of things you can index and change:
+  `["fire", "ice"]`. Reach for it when order matters and you'll add/remove items.
+- **`dict` — your object / `Map`.** Labelled slots: a **key** points to a
+  **value**, and looking one up is instant: `{"hp": 42, "mp": 10}`. Reach for it
+  when you want to find things *by name*, not by position.
+- **`set` — your `Set`.** A bag of **unique** things with instant "is X in here?"
+  checks — but **no order**: `{"fire", "ice"}`. Reach for it to dedupe or to test
+  membership fast.
+- **`tuple` — a frozen `list`.** A fixed little **record** you can't change after
+  you make it: `(41.9, 12.5)` (a lat/lon row). Because it can't change, it can be
+  used as a `dict` key — a `list` can't.
+
+One picture for all four: tools on one belt. A `list` is a **numbered shelf**
+(item #0, #1, #2…). A `dict` is a **coat-check** (hand over a ticket/key, get your
+coat back instantly). A `set` is a **guest list** (you're on it or you're not; the
+order doesn't matter). A `tuple` is a **sealed envelope** (a fixed record, glued
+shut).
+
+```python
+party      = ["Aria", "Bran"]        # list  — ordered, changeable
+stats      = {"hp": 42, "mp": 10}    # dict  — look up by key
+seen_tags  = {"fire", "ice"}         # set   — unique, unordered
+location   = (41.9, 12.5)            # tuple — fixed record (lat, lon)
+
+party.append("Cy")                   # lists grow
+stats["hp"] = 40                     # dicts update by key
+print("fire" in seen_tags)           # True — instant membership
+```
+
+**Why this is a whole lesson and not a footnote:** these four are *not*
+interchangeable bags. Picking the wrong one is the most common silent
+performance bug in real Python — e.g. searching a big **list** over and over
+(`x in my_list`) when a **set** would answer instantly. You don't need to feel
+that in your bones yet; Section 1 opens the hood and shows *why*, and the Decision
+Card in Section 2 turns it into a choose-the-right-tool table.
+
+> 🌉 **Carry this reflex from L0:** `b = a` never copies a container — it just
+> adds a second label to the same one, so mutating through `b` changes `a`. That
+> single fact is behind half the traps in this lesson.
+
+A quick "which do I reach for?" until it's instinct:
+
+| I want to… | Reach for | JS instinct |
+|---|---|---|
+| keep things in order, add/remove | `list` | `Array` |
+| look up a value *by name/key* | `dict` | object / `Map` |
+| dedupe, or test membership fast | `set` | `Set` |
+| a fixed pair/record (won't change) | `tuple` | a frozen array |
+
+Ready for the machinery? Section 1 opens the hood on each container — how it's
+laid out in memory and what that costs. Read as deep as your energy allows today;
+the daily drills and the **Ρώτα τον Δάσκαλο** button are there for the rest.
+
+---
+
 ## 1 · The concept
 
 Python gives you four core containers. They are not interchangeable bags — they

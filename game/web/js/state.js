@@ -163,6 +163,18 @@
       return this.questsForRegion(regionId).find((q) => q.type === 'boss') || null;
     },
 
+    /* The region's *current* boss: the first not-yet-passed boss in catalog
+     * order (so the single Quiz Boss button advances L1 -> L2 -> ... as each
+     * lesson's boss falls). Once every boss is passed, returns the last one so
+     * the button offers a rematch. This is what lets one region hold multiple
+     * per-lesson bosses without an engine/UI change per lesson. */
+    activeBossForRegion(regionId) {
+      const bosses = this.questsForRegion(regionId).filter((q) => q.type === 'boss');
+      if (!bosses.length) return null;
+      return bosses.find((q) => this.questStatus(q.id) !== 'passed')
+        || bosses[bosses.length - 1];
+    },
+
     questById(id) {
       return this.quests.find((q) => q.id === id) || null;
     },
