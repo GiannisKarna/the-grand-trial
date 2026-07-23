@@ -44,7 +44,7 @@ nested loop is written, saying complexity out loud unprompted.
 | ☐ | P0 | [L0 · First Steps](lesson-00-first-steps/LESSON.md) | Coming from JS: running Python, variables & types, print/f-strings, if/for/while, reading tracebacks — the on-ramp (no boss) |
 | ◐ | P0 | [L1 · Runes of Data](lesson-01-runes-of-data/LESSON.md) | Core data structures: list/dict/set/tuple, comprehensions, iteration idioms, mutability traps |
 | ☐ | P0 | [L2 · Flow of Mana](lesson-02-flow-of-mana/LESSON.md) | Functions, args/kwargs, scope, closures, error handling, context managers |
-| ☐ | P0 | L3 · Shaping Runes | Strings, slicing, sorting with keys, lambda, itertools basics |
+| ☐ | P0 | [L3 · Shaping Runes](lesson-03-shaping-runes/LESSON.md) | Strings, slicing, sorting with keys, lambda, itertools basics |
 | ☐ | P1 | L4 · Sigils of Order | Classes, dataclasses, dunder methods, typing/type hints |
 | ☐ | P1 | L5 · Time Trials | Timed katas: solve small problems in <15 min, interview-style |
 | ☐ | P2 | L6 · Deep Runework | Generators, decorators, functools, performance basics |

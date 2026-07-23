@@ -1,0 +1,361 @@
+{
+  "id": "pf-l3",
+  "title": "Shaping Runes",
+  "boss_name": "The Shaper of Names",
+  "questions": [
+    {
+      "id": "pf-l3-001",
+      "type": "predict",
+      "prompt": "What does this print?",
+      "code": "print(\"-\".join([\"a\", \"b\", \"c\"]))",
+      "choices": [
+        "a-b-c",
+        "abc",
+        "['a', 'b', 'c']",
+        "a, b, c"
+      ],
+      "answer": 0,
+      "explain": "join is a STRING method: separator.join(list). '-'.join([...]) glues the pieces with '-' between them. Coming from JS this feels backwards (arr.join('-')) — burn in the Python order: sep.join(list)."
+    },
+    {
+      "id": "pf-l3-002",
+      "type": "predict",
+      "prompt": "What does this print?",
+      "code": "print(\"a,b,,c\".split(\",\"))",
+      "choices": [
+        "['a', 'b', 'c']",
+        "['a', 'b', '', 'c']",
+        "['a', 'b', 'c', '']",
+        "['a,b,,c']"
+      ],
+      "answer": 1,
+      "explain": "split on an explicit delimiter keeps empty pieces — two commas in a row produce an empty string between them. (Only the no-argument split(), which splits on whitespace runs, drops empties.)"
+    },
+    {
+      "id": "pf-l3-003",
+      "type": "predict",
+      "prompt": "What does this print?",
+      "code": "print(\"  hello   world  \".split())",
+      "choices": [
+        "['hello', 'world']",
+        "['', 'hello', 'world', '']",
+        "['hello   world']",
+        "['hello', '', 'world']"
+      ],
+      "answer": 0,
+      "explain": "split() with NO argument splits on any run of whitespace and discards leading/trailing/empty pieces — the go-to for tokenizing messy text. (split(' ') with an explicit space would keep the empties.)"
+    },
+    {
+      "id": "pf-l3-004",
+      "type": "predict",
+      "prompt": "What does this print?",
+      "code": "s = \"hello\"\ns.replace(\"l\", \"L\")\nprint(s)",
+      "choices": [
+        "heLLo",
+        "hello",
+        "heLo",
+        "None"
+      ],
+      "answer": 1,
+      "explain": "Strings are immutable: replace() returns a NEW string and leaves s untouched. Because the result isn't assigned, it's thrown away and s is still 'hello'. To keep it: s = s.replace('l', 'L')."
+    },
+    {
+      "id": "pf-l3-005",
+      "type": "predict",
+      "prompt": "What does this print?",
+      "code": "print(\"interview\"[:3])",
+      "choices": [
+        "int",
+        "inte",
+        "nte",
+        "erview"
+      ],
+      "answer": 0,
+      "explain": "s[:3] means 'from the start up to (but not including) index 3' — characters 0, 1, 2 = 'int'. The stop index is always excluded."
+    },
+    {
+      "id": "pf-l3-006",
+      "type": "predict",
+      "prompt": "What does this print?",
+      "code": "print(\"interview\"[-4:])",
+      "choices": [
+        "view",
+        "rview",
+        "erview",
+        "wei"
+      ],
+      "answer": 0,
+      "explain": "A negative start counts from the end: -4 is the 4th char from the right, and with no stop the slice runs to the end — 'view'. Slicing never raises for out-of-range bounds and returns a new string."
+    },
+    {
+      "id": "pf-l3-007",
+      "type": "predict",
+      "prompt": "What does this print?",
+      "code": "print(\"abcde\"[::-1])",
+      "choices": [
+        "edcba",
+        "abcde",
+        "eabcd",
+        "bcdea"
+      ],
+      "answer": 0,
+      "explain": "[::-1] is the idiomatic full reverse: no start/stop, step -1 walks the sequence backwards, producing a new reversed string (or list). This is the one slicing trick interviewers expect on sight."
+    },
+    {
+      "id": "pf-l3-008",
+      "type": "predict",
+      "prompt": "What does this print?",
+      "code": "print([0, 1, 2, 3, 4][1:4])",
+      "choices": [
+        "[1, 2, 3, 4]",
+        "[1, 2, 3]",
+        "[2, 3, 4]",
+        "[1, 2]"
+      ],
+      "answer": 1,
+      "explain": "The same slice syntax works on lists and returns a NEW list. [1:4] gives indices 1, 2, 3 — the stop (4) is excluded. Getting that exclusive stop wrong is the classic off-by-one."
+    },
+    {
+      "id": "pf-l3-009",
+      "type": "predict",
+      "prompt": "What does this print?",
+      "code": "print([0, 1, 2, 3, 4, 5][4:1:-1])",
+      "choices": [
+        "[4, 3, 2, 1]",
+        "[4, 3, 2]",
+        "[2, 3, 4]",
+        "[1, 2, 3]"
+      ],
+      "answer": 1,
+      "explain": "With a negative step the slice walks backwards from start (4) toward stop (1), and stop is STILL excluded — so you get 4, 3, 2, not 1. Negative-step stops trip almost everyone."
+    },
+    {
+      "id": "pf-l3-010",
+      "type": "predict",
+      "prompt": "What does this print?",
+      "code": "print(sorted([\"bb\", \"a\", \"ccc\"], key=len))",
+      "choices": [
+        "['a', 'bb', 'ccc']",
+        "['ccc', 'bb', 'a']",
+        "['bb', 'a', 'ccc']",
+        "['a', 'ccc', 'bb']"
+      ],
+      "answer": 0,
+      "explain": "key=len sorts by each element's length rather than its value: 'a'(1), 'bb'(2), 'ccc'(3). The key function is called once per element and Python sorts by what it returns."
+    },
+    {
+      "id": "pf-l3-011",
+      "type": "predict",
+      "prompt": "What does this print?",
+      "code": "print(sorted([(\"a\", 2), (\"b\", 1), (\"c\", 2)], key=lambda p: (-p[1], p[0])))",
+      "choices": [
+        "[('a', 2), ('c', 2), ('b', 1)]",
+        "[('b', 1), ('a', 2), ('c', 2)]",
+        "[('a', 2), ('b', 1), ('c', 2)]",
+        "[('c', 2), ('a', 2), ('b', 1)]"
+      ],
+      "answer": 0,
+      "explain": "The tuple key sorts by count DESCENDING (that's the -p[1]) then name ASCENDING (p[0]): the two 2s come first, ordered a then c, and the 1 last. This 'count desc, then name asc' line is the single most-asked sorting pattern."
+    },
+    {
+      "id": "pf-l3-012",
+      "type": "predict",
+      "prompt": "What does this print?",
+      "code": "x = [3, 1, 2].sort()\nprint(x)",
+      "choices": [
+        "[1, 2, 3]",
+        "None",
+        "[3, 1, 2]",
+        "[3, 2, 1]"
+      ],
+      "answer": 1,
+      "explain": "list.sort() sorts IN PLACE and returns None — so x is None, not the sorted list. Assigning the result of .sort() is a classic bug; use sorted(...) when you want the sorted list back as a value."
+    },
+    {
+      "id": "pf-l3-013",
+      "type": "predict",
+      "prompt": "What does this print?",
+      "code": "nums = [3, 1, 2]\nprint(sorted(nums))\nprint(nums)",
+      "choices": [
+        "[1, 2, 3]\n[1, 2, 3]",
+        "[1, 2, 3]\n[3, 1, 2]",
+        "[3, 1, 2]\n[1, 2, 3]",
+        "None\n[3, 1, 2]"
+      ],
+      "answer": 1,
+      "explain": "sorted() returns a NEW sorted list and leaves the original untouched — so the sorted view prints first, then nums is still [3, 1, 2]. That non-mutation is exactly why sorted() is the safer default over .sort()."
+    },
+    {
+      "id": "pf-l3-014",
+      "type": "predict",
+      "prompt": "What does this print?",
+      "code": "print(sorted([\"bb\", \"aa\", \"cc\"], key=len))",
+      "choices": [
+        "['aa', 'bb', 'cc']",
+        "['bb', 'aa', 'cc']",
+        "['cc', 'bb', 'aa']",
+        "['bb', 'cc', 'aa']"
+      ],
+      "answer": 1,
+      "explain": "Every element has length 2, so all keys tie — and Python's sort is STABLE, meaning tied elements keep their original order: bb, aa, cc unchanged. Stability is what makes multi-key sorting reliable."
+    },
+    {
+      "id": "pf-l3-015",
+      "type": "predict",
+      "prompt": "What does this print?",
+      "code": "print(max([(\"a\", 1), (\"b\", 3), (\"c\", 2)], key=lambda p: p[1]))",
+      "choices": [
+        "('b', 3)",
+        "('a', 1)",
+        "3",
+        "('c', 2)"
+      ],
+      "answer": 0,
+      "explain": "max (and min) take the same key= as sorted: here it compares each pair by its second element and returns the whole pair with the largest one — ('b', 3). You get the element back, not just the key's value."
+    },
+    {
+      "id": "pf-l3-016",
+      "type": "predict",
+      "prompt": "What does this print?",
+      "code": "from itertools import accumulate\nprint(list(accumulate([2, 1, 3], max)))",
+      "choices": [
+        "[2, 2, 3]",
+        "[2, 1, 3]",
+        "[2, 3, 6]",
+        "[3, 3, 3]"
+      ],
+      "answer": 0,
+      "explain": "accumulate with the max function yields a RUNNING max: max so far after each element — 2, then max(2,1)=2, then max(2,3)=3. With no function it gives a running sum. A tidy itertools tool for cumulative results."
+    },
+    {
+      "id": "pf-l3-017",
+      "type": "bug",
+      "prompt": "render(['a', 'b']) crashes with AttributeError: 'list' object has no attribute 'join'. What is the bug?",
+      "code": "def render(parts):\n    return parts.join(\"-\")",
+      "choices": [
+        "join is a STRING method, not a list method — call it on the separator: '-'.join(parts)",
+        "parts must be a tuple, not a list",
+        "join requires a second argument",
+        "you must write parts.join() with no argument"
+      ],
+      "answer": 0,
+      "explain": "In Python, join belongs to the separator string: '-'.join(parts). A list has no .join(). This backwards-from-JS spelling (arr.join('-')) is the #1 string tell that someone doesn't write much Python — make sep.join(list) automatic."
+    },
+    {
+      "id": "pf-l3-018",
+      "type": "bug",
+      "prompt": "This works, but a reviewer flags it for large inputs. What is the accepted criticism?",
+      "code": "def build(words):\n    out = \"\"\n    for w in words:\n        out += w\n    return out",
+      "choices": [
+        "strings are immutable, so each += may copy everything built so far — O(n^2) worst case; collect the pieces in a list and ''.join(words)",
+        "+= on a string mutates the caller's list as a side effect",
+        "you must use out.append(w) inside the loop",
+        "strings cannot be concatenated inside a loop at all"
+      ],
+      "answer": 0,
+      "explain": "A str can't be modified, so conceptually every += allocates a new string and copies both halves — quadratic over n pieces. ''.join(words) is guaranteed linear and is what a reviewer expects. (CPython sometimes optimises += in place, but that's an implementation detail that vanishes the moment a second reference exists.)"
+    },
+    {
+      "id": "pf-l3-019",
+      "type": "bug",
+      "prompt": "smallest([3, 1, 2]) crashes with \"'NoneType' object is not subscriptable\". Why?",
+      "code": "def smallest(xs):\n    return xs.sort()[0]",
+      "choices": [
+        "list.sort() sorts in place and returns None, so [0] tries to index None; use sorted(xs)[0], or xs.sort() then return xs[0]",
+        "xs must be guaranteed non-empty first",
+        "sort() needs a key argument to work",
+        "[0] should be [-1] to get the smallest"
+      ],
+      "answer": 0,
+      "explain": "xs.sort() returns None (it mutates in place), and None[0] is the crash. Either use the expression form sorted(xs)[0], or sort in place on its own line and then index xs[0]. This is the return-None trap from L1, now biting a slice."
+    },
+    {
+      "id": "pf-l3-020",
+      "type": "bug",
+      "prompt": "last_two([1, 2, 3, 4]) should return the last two items but returns only [3]. What is the bug?",
+      "code": "def last_two(xs):\n    return xs[-2:-1]",
+      "choices": [
+        "a slice's stop is EXCLUSIVE, and -1 stops just before the final element; drop the stop — xs[-2:] runs to the end",
+        "negative indices are not allowed as slice bounds",
+        "xs[-2:-1] makes a copy that drops an element",
+        "it should be written xs[-1:-2]"
+      ],
+      "answer": 0,
+      "explain": "xs[-2:-1] starts at the second-to-last and stops BEFORE the last (stop is exclusive), yielding a single element. To include the end, omit the stop: xs[-2:]. Exclusive-stop off-by-ones are the most common slicing mistake."
+    },
+    {
+      "id": "pf-l3-021",
+      "type": "bug",
+      "prompt": "count_letters('banana') is supposed to count each letter but returns wrong counts like {'b': 1, 'a': 1, 'n': 1}. What is the flaw?",
+      "code": "from itertools import groupby\ndef count_letters(s):\n    return {k: len(list(g)) for k, g in groupby(s)}",
+      "choices": [
+        "groupby only groups CONSECUTIVE equal keys, so 'banana' splits into many one-letter runs and the dict keeps only the last count per letter; sort first (groupby(sorted(s))) or just use collections.Counter(s)",
+        "groupby returns its keys in random order",
+        "len(list(g)) consumes the group so the next one is empty",
+        "dict comprehensions cannot iterate over groupby"
+      ],
+      "answer": 0,
+      "explain": "groupby groups only ADJACENT equal keys. 'banana' is b-a-n-a-n-a, so every letter is its own run; the dict comprehension then overwrites each key, keeping the last (count 1). Either sort s first so equal letters are adjacent, or reach for collections.Counter(s), which is clearer for plain counting."
+    },
+    {
+      "id": "pf-l3-022",
+      "type": "truth",
+      "prompt": "True or false: strings in Python are immutable, so every string method returns a new string and never modifies the original.",
+      "code": null,
+      "choices": [
+        "True",
+        "False"
+      ],
+      "answer": 0,
+      "explain": "True — s.lower(), s.replace(...), s.strip() all return NEW strings; s is unchanged unless you reassign it. The practical fallout: build big strings with ''.join, not += in a loop, because each concatenation makes a fresh copy."
+    },
+    {
+      "id": "pf-l3-023",
+      "type": "truth",
+      "prompt": "True or false: sorted() returns a new list and works on any iterable, while list.sort() sorts in place and returns None.",
+      "code": null,
+      "choices": [
+        "True",
+        "False"
+      ],
+      "answer": 0,
+      "explain": "True — sorted(iterable, key=...) gives you a new list from any iterable (tuples, sets, dict keys, generators); list.sort() only works on a list, mutates it, and returns None. Prefer sorted() when you want a value back or must not touch the original."
+    },
+    {
+      "id": "pf-l3-024",
+      "type": "truth",
+      "prompt": "True or false: in a slice s[a:b], the element at index b is included in the result.",
+      "code": null,
+      "choices": [
+        "True",
+        "False"
+      ],
+      "answer": 1,
+      "explain": "False — the stop index is EXCLUSIVE: s[a:b] includes a but stops just before b. So s[1:4] gives indices 1, 2, 3. This exclusive stop (also true with negative steps) is the classic off-by-one."
+    },
+    {
+      "id": "pf-l3-025",
+      "type": "truth",
+      "prompt": "True or false: Python's sort is stable — elements whose sort keys are equal keep their original relative order.",
+      "code": null,
+      "choices": [
+        "True",
+        "False"
+      ],
+      "answer": 0,
+      "explain": "True — Timsort (used by both sorted and list.sort) is stable. That's what makes 'sort by the secondary key first, then the primary' work, and why a tuple key like (-count, name) reliably breaks ties the way you intend."
+    },
+    {
+      "id": "pf-l3-026",
+      "type": "truth",
+      "prompt": "True or false: the correct way to join a list of strings is separator.join(list) — a plain list has no .join() method.",
+      "code": null,
+      "choices": [
+        "True",
+        "False"
+      ],
+      "answer": 0,
+      "explain": "True — join lives on the separator string: '-'.join(parts). Lists have no .join(). Writing parts.join('-') (the JS habit) raises AttributeError; make sep.join(list) a reflex."
+    }
+  ]
+}

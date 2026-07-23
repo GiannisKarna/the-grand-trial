@@ -67,6 +67,39 @@
       "requires": ["pf-l2-q1", "pf-l2-q2"]
     },
     {
+      "id": "pf-l3-q1",
+      "region": "rune-plains",
+      "lesson": "L3 · Shaping Runes",
+      "type": "code",
+      "title": "The Runesmith's Lexicon",
+      "xp": 100,
+      "path": "01-python-fluency/lesson-03-shaping-runes/quest-01",
+      "summary": "Shape crooked names clean from a blank file: normalize, slugify, initials, reverse-words with split/join and slicing.",
+      "requires": ["pf-l2-boss"]
+    },
+    {
+      "id": "pf-l3-q2",
+      "region": "rune-plains",
+      "lesson": "L3 · Shaping Runes",
+      "type": "code",
+      "title": "The Sorting Stones",
+      "xp": 100,
+      "path": "01-python-fluency/lesson-03-shaping-runes/quest-02",
+      "summary": "Speak the right key to each stone: sort by length, by a two-part tuple key, by last name, and by a computed key.",
+      "requires": ["pf-l3-q1"]
+    },
+    {
+      "id": "pf-l3-boss",
+      "region": "rune-plains",
+      "lesson": "L3 · Shaping Runes",
+      "type": "boss",
+      "title": "The Shaper of Names",
+      "xp": 50,
+      "bank": "pf-l3",
+      "summary": "Face the Shaper: twelve questions on strings, slicing, sorting with keys, lambda and itertools.",
+      "requires": ["pf-l3-q1", "pf-l3-q2"]
+    },
+    {
       "id": "the-dragon",
       "region": "dragons-keep",
       "lesson": "The Final Trial",

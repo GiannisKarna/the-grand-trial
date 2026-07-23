@@ -33,6 +33,28 @@ solution). Rune Plains Python fluency is the critical path. Target: interview-re
 
 ## Session log
 
+### 2026-07-24 — L3 · Shaping Runes authored (beginner-first, playable)
+- Third Rune Plains lesson, same beginner-first pattern: `lesson-03-shaping-runes/
+  LESSON.md` — plain-words Section 0, JS bridges, three Decision Cards
+  (sorted-vs-`.sort`, `join`-vs-`+=`, `key=`-vs-comparator) and a
+  parse→shape→order→render demo. Covers strings & immutability, the `join`
+  direction, slicing (incl. negative step), sorting with tuple keys + stability,
+  `lambda`, and `itertools` (accumulate/chain/groupby + the "must sort first"
+  gotcha). Every snippet run on Python 3.14 (fixed two wrong output comments).
+- Quests: Q1 · The Runesmith's Lexicon (`lexicon.py` — split/join/slicing) and
+  Q2 · The Sorting Stones (`sorting.py` — four `sorted(key=...)` drills).
+  Workspaces TEST-ONLY; tests verified against throwaway reference solutions
+  (16 + 10 green), then discarded. Student writes the modules (Law 1).
+- Quiz bank `pf-l3.json` — 26 questions (16 predict / 5 bug / 5 truth), boss **The
+  Shaper of Names**; generated with the execute-and-assert verifier (every predict
+  answer == real stdout; bug/truth premises asserted).
+- Wiring is pure data (quests.json + bank) — no engine change needed, the L2
+  `activeBossForRegion` fix already advances the button L1 → L2 → L3. Gated: L3
+  quests require the L2 boss; the Shaper requires both L3 quests.
+- Session start (Law 3): save shows 7 active L1 curses (003 dict-order ×3, 001
+  aliasing ×2, 010 stability ×2, 008/009/021/022 ×1). Surfaced them and posed 3
+  verbal curse questions; the daily drill will re-attack them. No save/XP changes.
+
 ### 2026-07-23 — L2 · Flow of Mana authored (beginner-first, playable)
 - Second Rune Plains lesson, written end-to-end in the new beginner style:
   `lesson-02-flow-of-mana/LESSON.md` — plain-words Section 0, JS↔Python bridges,
